@@ -80,20 +80,20 @@ def load_problem(problem,problem_path):
         datas = f.readline()
         # First line: problem description/inputs
         datas = list(map(lambda x:int(x), datas.split()))
-        problem.infos = {var[i] : datas[i] for i in range(len(var))}
+        problem.set_infos({var[i] : datas[i] for i in range(len(var))})
         # Second line: videos (sizes)
         videos_list = load_videos(f.readline())
-        problem.videos = videos_list
+        problem.set_videos(videos_list)
         # Next lines: endpoints (latency of DC and cache)
         endpoints_list = []
         for iE in range(problem.infos["E"]):
             endpoints_list.append(load_endpoint(f,iE))
-        problem.endpoints = endpoints_list
+        problem.set_endpoints(endpoints_list)
         # Next lines: requests
         requests_list = []
         for _ in range(problem.infos["R"]):
             requests_list.append(load_request(f.readline()))
-        problem.requests = requests_list
+        problem.set_requests(requests_list)
 
 #    caches = [Cache(1)]
 #    endpoints = [EndPoint(1)]

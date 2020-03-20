@@ -5,11 +5,52 @@ from classes import *
 class Problem:
     def __init__(self):
         self.result_path = None
-        self.infos = None
-        self.videos = list()
-        self.endpoints = list()
-        self.requests = list()
+        self._infos = None
+        self._videos = list()
+        self._endpoints = list()
+        self._requests = list()
         self.caches = {}
+    
+    # Infos
+    @property
+    def infos(self):
+        return self._infos
+    @infos.setter
+    def infos(self,infos):
+        self._infos = infos    
+    def set_infos(self,infos):
+        self._infos = infos
+    
+    # Videos
+    @property
+    def videos(self):
+        return self._videos
+    @videos.setter
+    def videos(self,videos):
+        self._videos = videos
+    def set_videos(self,videos):
+        self._videos = videos
+    
+    # Endpoints
+    @property
+    def endpoints(self):
+        return self._endpoints
+    @endpoints.setter
+    def endpoints(self,endpoints):
+        self._endpoints = endpoints
+    def set_endpoints(self,endpoints):
+        self._endpoints = endpoints
+    
+    # Requests
+    @property
+    def requests(self):
+        return self._requests
+    @requests.setter
+    def requests(self,requests):
+        self._requests = requests
+    def set_requests(self,requests):
+        self._requests = requests
+
         
     def __str__(self):
         result_path = "Result path: "+str(self.result_path)+"\n"
@@ -20,10 +61,12 @@ class Problem:
         str_all = result_path+str_infos+str_vid+str_endpoints+str_requests
         return str_all
 
-    def load_problem(self, problem_path):
-        """ Load a problem file """
-        result = load_problem(problem_path)
-        self.caches, self.endpoints, self.videos = result
+        
+#    def load_problem(self, problem_path):
+#        """ Load a problem file """
+#        result = load_problem(problem_path)
+#        self.caches, self.endpoints, self.videos = result
+    
 
     def save_solution(self, result_path):
         """ Create a solution from the current problem and save it in a file"""
