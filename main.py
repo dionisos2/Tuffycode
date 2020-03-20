@@ -1,13 +1,18 @@
 from get_score import get_score
+from load_problem import load_problem
+from classes import *
 
 class Problem:
     def __init__(self):
-        self.x=10
         self.result_path = None
+        self.endpoints = {}
+        self.videos = {}
+        self.caches = {}
 
         """ Load a problem file """
     def load_problem(self, problem_path):
-        pass
+        result = load_problem(problem_path)
+        self.caches, self.endpoints, self.videos = result
 
 
     """ Create a solution from the current problem and save it in a file"""
@@ -25,4 +30,4 @@ problem.load_problem("./qualification_round_2017.in/me_at_the_zoo.in")
 
 problem.save_solution("result.txt")
 
-problem.get_score()
+print(problem.get_score())
