@@ -19,13 +19,10 @@ class Problem:
         self.result_path = result_path
         pass
 
-    def get_score(self):
-        return get_score(self.result_path)
-
 
 problem = Problem()
 problem.load_problem("./qualification_round_2017.in/me_at_the_zoo.in")
 
 problem.save_solution("result.txt")
 
-print(problem.get_score())
+print(get_score(problem, "result.txt"))
