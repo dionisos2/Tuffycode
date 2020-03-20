@@ -66,7 +66,7 @@ if do_test_load_request:
 
 ## == LOAD PROBLEM ==
 
-def load_problem(problem_path):
+def load_problem(problem,problem_path):
     """Load a problem file."""
     # Generic parameters
     # V: nbr of videos
@@ -80,24 +80,31 @@ def load_problem(problem_path):
         datas = f.readline()
         # First line: problem description/inputs
         datas = list(map(lambda x:int(x), datas.split()))
-        self.inputs = {var[i] : datas[i] for i in range(len(var))}
+        problem.infos = {var[i] : datas[i] for i in range(len(var))}
         # Second line: videos (sizes)
         videos_list = load_videos(f.readline())
-        self.videos = videos_list
+        problem.videos = videos_list
         # Next lines: endpoints (latency of DC and cache)
         endpoints_list = []
-        for iE in range(self.inputs["E"]):
+        for iE in range(problem.infos["E"]):
             endpoints_list.append(load_endpoint(f,iE))
-        self.endpoints = endpoints_list
+        problem.endpoints = endpoints_list
         # Next lines: requests
         requests_list = []
-        for _ in range(self.inputs["R"]):
-            requests_list.append(load_request(f))
-        self.requests = requests_list
-
+        for _ in range(problem.infos["R"]):
+            requests_list.append(load_request(f.readline()))
+        problem.requests = requests_list
 
 #    caches = [Cache(1)]
 #    endpoints = [EndPoint(1)]
 #    videos = [Video(1)]
-    return (videos_list, endpoints_list, requests_list) #self.inputs, 
+#    return (videos_list, endpoints_list, requests_list) #self.inputs, 
 
+#do_test_load_problem = False
+#if do_test_load_problem:
+#    problem = Problem()
+#    print(problem)
+#    problem_path = "test_load_problem"
+#    load_problem(problem,problem_path)
+#    print(problem)
+    
