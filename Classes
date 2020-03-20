@@ -1,0 +1,23 @@
+class Cache :
+    def __init__ (self,size):
+        self.size = size
+
+
+        
+class Endpoint :
+    def __init__ (self,Datacenterlatency):
+        self.Datacenterlatency = Datacenterlatency
+        self.CacheLatency = {}
+
+    def ajouter_cache(self,Cache,latency):
+        self.CacheLatency[Cache] = latency
+
+
+
+class Vidéo :
+    def __init__ (self,size):
+        self.size = size
+        self.requests = {}
+
+    def ajouter_requetes(self,Endpoint,nbr)
+        self.CacheLatency[Endpoint] = nbr
