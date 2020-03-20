@@ -14,12 +14,10 @@ class Problem:
         result = load_problem(problem_path)
         self.caches, self.endpoints, self.videos = result
 
-
     """ Create a solution from the current problem and save it in a file"""
     def save_solution(self, result_path):
         self.result_path = result_path
         pass
-
 
     def get_score(self):
         return get_score(self.result_path)
