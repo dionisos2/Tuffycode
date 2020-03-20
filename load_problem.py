@@ -2,7 +2,9 @@ from classes import *
     #dio : lord il faut que tu mettes tous ça dans les objets classes associés.
     # et par contre n’hésite pas à dire si il y a un problème.
 
+# Generic function
 def line_to_int_list(line):
+    """Read file line into a list of int."""
     return list(map(lambda x:int(x), line.split()))
 
 ## == LOAD VIDEOS ==
@@ -35,7 +37,7 @@ def load_endpoint(file,num_endpoint):
     return endpoint
 
 # Test load_endpoint
-do_test_load_endpoint = True
+do_test_load_endpoint = False
 if do_test_load_endpoint:
     file_name = "test_load_endpoint.txt"
     with open(file_name, "r+") as file:
@@ -45,6 +47,22 @@ if do_test_load_endpoint:
         # 2nd endpoint
         endpoint2 = load_endpoint(file,2)
         print(endpoint2)
+
+
+## == LOAD REQUEST ==
+
+def load_request(file_line):
+    """Return Request object"""
+    vid_id,ep_id,nb_request = line_to_int_list(file_line)
+    return Request(vid_id,ep_id,nb_request)
+
+# Test load_request
+do_test_load_request = False
+if do_test_load_request: 
+    file_line = "3   0   1500 "
+    request = load_request(file_line)
+    print(request)
+
 
 ## == LOAD PROBLEM ==
 
@@ -64,13 +82,22 @@ def load_problem(problem_path):
         datas = list(map(lambda x:int(x), datas.split()))
         self.inputs = {var[i] : datas[i] for i in range(len(var))}
         # Second line: videos (sizes)
-        self.videos = load_videos(f.readline())
+        videos_list = load_videos(f.readline())
+        self.videos = videos_list
         # Next lines: endpoints (latency of DC and cache)
+        endpoints_list = []
         for iE in range(self.inputs["E"]):
-            self.endpoints.append(load_endpoint(f,iE))
-        # Next lines: 
+            endpoints_list.append(load_endpoint(f,iE))
+        self.endpoints = endpoints_list
+        # Next lines: requests
+        requests_list = []
+        for _ in range(self.inputs["R"]):
+            requests_list.append(load_request(f))
+        self.requests = requests_list
 
-    caches = [Cache(1)]
-    endpoints = [EndPoint(1)]
-    videos = [Video(1)]
-    return(caches, endpoints, videos)
+
+#    caches = [Cache(1)]
+#    endpoints = [EndPoint(1)]
+#    videos = [Video(1)]
+    return (videos_list, endpoints_list, requests_list) #self.inputs, 
+
