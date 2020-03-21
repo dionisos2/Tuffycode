@@ -1,47 +1,37 @@
 from classes import *
+from load_and_save import load_problem, save_solution, load_solution
+
+def get_score(problem_path, solution_path):
+    problem = load_problem(problem_path)
+    solution = load_solution(solution_path)
 
 
-def get_score(problem, solution_path):
-    caches = {}
-
-    # Load solution from text file
-    with open(solution_path, "r+") as f:
-        cache_nbr = int(f.readline())
-        for _ in range(cache_nbr):
-            # Set each cache configuration (videos to store)
-            params = f.readline().split()
-            for video_id in params[1:]:
-                # A CONCORDER avec la structure de Cache (Cache.videos)
-                problem.caches[params[0]].videos.add(video_id)
-
-    # Compute solution's score
     score = 0
-    # SI on s'en tient a l'enonce, ce serait une boucle sur les requests.
-    # A DISCUTER pour voir le truc interessant.
-    # Pas exactement bijectif (ni injectif, ni surjectif non plus).
-    for video_id, video in problem.videos.items():
-        score += get_video_score(problem, video_id, video)
+    for request in problem.requests:
+        score += get_request_score(problem, solution, request)
+
+    score /= sum(request.nb_request for request in problem.requests)
+    return int(score * 1000)
 
 
-def get_video_score(problem, video_id, video):
-    best_score = 0
-    if len(video.requests) == 0:
+def get_request_score(problem, solution, request):
+    possible_caches = get_possible_caches(problem, solution, request)
+    if len(possible_caches) == 0:
         return 0
+
+    best_cache_latency = min(possible_caches, key=lambda cache: cache.latency)
+    dc_latency = problem.endpoints[request.ep_id].dc_latency
+
+    if best_cache_latency < dc_latency:
+        return (dc_latency - best_cache_latency) * request.nb_request
     else:
-        for endpoint_id, request_nbr in video.requests.items():
-            possible_caches = get_possible_caches(problem, video_id, endpoint_id)
-            best_cache_latency = min(possible_caches, key=lambda cache: cache.latency)
-            latency_diff = abs(problem.endpoints[endpoint_id].data_center_latency-best_cache_latency)
-            best_score = max(latency_diff, best_score) # ?
-    return best_score
+        return 0
 
 
-def get_possible_caches(problem, video_id, endpoint_id):
+def get_possible_caches(problem, solution, request):
     """ Pour 1 video et 1 endpoint, trouve les caches en commun.
     Entre la cfg solution (videos-caches) et les liaisons endpoints-caches."""
-    possible_caches = set()
-    for cache in problem.caches:
-        if video_id in cache.videoDict and cache in problem.endpoints.caches_latency:
-            possible_caches.add(cache)
+    connected_caches = set(problem.endpoints[request.ep_id].caches_latency.keys())
+    caches_with_video = set(cache for cache in solution.caches if request.vid_id in cache.videos)
 
-    return possible_caches
+    return connected_caches.intersection(caches_with_video)

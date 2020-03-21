@@ -11,13 +11,12 @@ def load_videos(file_line):
     """ Return list of Video objects (numId, sz)"""
     return list(map(lambda tup:Video(tup[0],tup[1]), enumerate(line_to_int_list(file_line))))
 
-# Test load_videos
-do_test_load_videos = False
-if do_test_load_videos:
-    file_line = "50   50   80   30   110"
-    vid_list = load_videos(file_line)
-    print(vid_list)
-
+def test_load_videos():
+    do_test_load_videos = False
+    if do_test_load_videos:
+        file_line = "50   50   80   30   110"
+        vid_list = load_videos(file_line)
+        print(vid_list)
 
 ## == LOAD ENDPOINT ==
 
@@ -34,17 +33,17 @@ def load_endpoint(problem_file, num_endpoint):
         endpoint.add_cache_latency(cache_id,latency)
     return endpoint
 
-# Test load_endpoint
-do_test_load_endpoint = False
-if do_test_load_endpoint:
-    file_name = "qualification_round_2017/example.txt"
-    with open(file_name, "r+") as problem_file:
-        # First endpoint
-        endpoint = load_endpoint(problem_file,1)
-        print(endpoint)
-        # 2nd endpoint
-        endpoint2 = load_endpoint(problem_file,2)
-        print(endpoint2)
+def test_load_endpoint():
+    do_test_load_endpoint = False
+    if do_test_load_endpoint:
+        file_name = "input/example.txt"
+        with open(file_name, "r+") as problem_file:
+            # First endpoint
+            endpoint = load_endpoint(problem_file,1)
+            print(endpoint)
+            # 2nd endpoint
+            endpoint2 = load_endpoint(problem_file,2)
+            print(endpoint2)
 
 
 ## == LOAD REQUEST ==
@@ -54,18 +53,21 @@ def load_request(file_line):
     vid_id,ep_id,nb_request = line_to_int_list(file_line)
     return Request(vid_id,ep_id,nb_request)
 
-# Test load_request
-do_test_load_request = False
-if do_test_load_request:
-    file_line = "3   0   1500 "
-    request = load_request(file_line)
-    print(request)
+def test_load_request():
+    do_test_load_request = False
+    if do_test_load_request:
+        file_line = "3   0   1500 "
+        request = load_request(file_line)
+        print(request)
 
 
 ## == LOAD PROBLEM ==
 
-def load_problem(problem, problem_path):
+def load_problem(problem_path):
     """Load a problem file."""
+
+    problem = Problem()
+
     # Generic parameters
     # V: nbr of videos
     # E: nbr of endpoints
@@ -93,6 +95,7 @@ def load_problem(problem, problem_path):
             requests_list.append(load_request(problem_file.readline()))
         problem.set_requests(requests_list)
 
+    return problem
 
 #do_test_load_problem = False
 #if do_test_load_problem:
@@ -101,3 +104,20 @@ def load_problem(problem, problem_path):
 #    problem_path = "test_load_problem"
 #    load_problem(problem,problem_path)
 #    print(problem)
+
+def save_solution(solution, file_path):
+    pass
+
+def load_solution(file_path):
+    solution = Solution()
+    with open(file_path, "r+") as solution_file:
+        cache_nbr = int(solution_file.readline())
+        for _ in range(cache_nbr):
+            # Set each cache configuration (videos to store)
+            params = solution_file.readline().split()
+            for video_id in params[1:]:
+                # A CONCORDER avec la structure de Cache (Cache.videos)
+                # problem.caches[params[0]].videos.add(video_id)
+                pass
+
+    return solution
