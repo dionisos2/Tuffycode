@@ -3,7 +3,7 @@ from load_and_save import load_problem, save_solution, load_solution
 
 def get_score(problem_path, solution_path):
     problem = load_problem(problem_path)
-    solution = load_solution(solution_path)
+    solution = load_solution(solution_path, problem)
 
     check_validity(problem, solution)
     score = 0

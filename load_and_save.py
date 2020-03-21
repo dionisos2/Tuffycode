@@ -101,25 +101,27 @@ def load_problem(problem_path):
     return problem
 
 
-def save_solution(solution, file_path):
-    caches = sorted(solution.caches.values(), key=lambda cache:cache.num_id)
+## == SOLUTION ==
+
+def save_solution(solution, file_path, problem):
+    caches = sorted(solution.caches.values(), key=lambda cache:cache.num_id) # sorted pas absolument necessaire
     with open(file_path, "w") as solution_file:
         solution_file.write(str(len(caches)) + "\n")
         for cache in caches:
-            line = str(cache.num_id) + " " + " ".join(map(str, sorted(cache.videos_id)))
+            line = str(cache.num_id) + " " + " ".join(map(lambda x:str(vid.num_id), sorted(cache.videos)))
             solution_file.write(line + "\n")
 
-def load_solution(file_path):
+def load_solution(file_path, problem):
     solution = Solution()
     with open(file_path, "r") as solution_file:
         cache_nbr = int(solution_file.readline())
         for _ in range(cache_nbr):
             # Set each cache configuration (videos to store)
-            params = list(map(int, solution_file.readline().split()))
+            params = line_to_int_list(solution_file.readline())
             cache_id = params[0]
             cache = Cache(cache_id)
             for video_id in params[1:]:
-                cache.videos_id.add(video_id)
+                cache.videos.add(problem.videos[video_id])
 
             solution.caches[cache_id] = cache
 
