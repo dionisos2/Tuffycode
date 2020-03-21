@@ -36,7 +36,7 @@ def get_best_cache_latency(problem, solution, request):
 
     endpoint = request.endpoint
     for cache_id, cache_latency in endpoint.caches_latency.items():
-        if request.video in solution.caches[cache_id]: # j'ai fait un test simple de in et normalement ca devrait etre ok. Sinon, faudra ptet redefinir un __contains__ ou du genre
+        if request.video in solution.caches[cache_id].videos:
             best_latency = min(best_latency, cache_latency)
 
     return best_latency

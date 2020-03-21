@@ -94,7 +94,7 @@ def load_problem(problem_path):
         # Next lines: requests
         requests_list = [] # on pourrait juste faire un set (car contrairement aux videos ou endpoints, il n'y a pas d'ordre)
         for _ in range(problem.infos["R"]):
-            requests_list.append(load_request(problem_file.readline()))
+            requests_list.append(load_request(problem_file.readline(), problem))
         problem.set_requests(requests_list)
 
 
@@ -103,7 +103,7 @@ def load_problem(problem_path):
 
 ## == SOLUTION ==
 
-def save_solution(solution, file_path, problem):
+def save_solution(solution, file_path):
     caches = sorted(solution.caches.values(), key=lambda cache:cache.num_id) # sorted pas absolument necessaire
     with open(file_path, "w") as solution_file:
         solution_file.write(str(len(caches)) + "\n")
