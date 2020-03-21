@@ -37,7 +37,7 @@ def test_load_endpoint():
     do_test_load_endpoint = False
     if do_test_load_endpoint:
         file_name = "input/example.txt"
-        with open(file_name, "r+") as problem_file:
+        with open(file_name, "r") as problem_file:
             # First endpoint
             endpoint = load_endpoint(problem_file,1)
             print(endpoint)
@@ -76,7 +76,7 @@ def load_problem(problem_path):
     # X: size of cache
     var = ["V", "E", "R", "C", "X"]
 
-    with open(problem_path, "r+") as problem_file:
+    with open(problem_path, "r") as problem_file:
         datas = problem_file.readline()
         # First line: problem description/inputs
         datas = list(map(int, datas.split()))
@@ -95,29 +95,30 @@ def load_problem(problem_path):
             requests_list.append(load_request(problem_file.readline()))
         problem.set_requests(requests_list)
 
+
     return problem
 
-#do_test_load_problem = False
-#if do_test_load_problem:
-#    problem = Problem()
-#    print(problem)
-#    problem_path = "test_load_problem"
-#    load_problem(problem,problem_path)
-#    print(problem)
 
 def save_solution(solution, file_path):
-    pass
+    caches = sorted(solution.caches.values())
+    with open(file_path, "w") as solution_file:
+        solution_file.write(str(len(caches)) + "\n")
+        for cache in caches:
+            line = cache.num_id + " " + " ".join(sorted(cache.videos))
+            solution_file.write(line + "\n")
 
 def load_solution(file_path):
     solution = Solution()
-    with open(file_path, "r+") as solution_file:
+    with open(file_path, "r") as solution_file:
         cache_nbr = int(solution_file.readline())
         for _ in range(cache_nbr):
             # Set each cache configuration (videos to store)
-            params = solution_file.readline().split()
+            params = list(map(int, solution_file.readline().split()))
+            cache_id = params[0]
+            cache = Cache(cache_id)
             for video_id in params[1:]:
-                # A CONCORDER avec la structure de Cache (Cache.videos)
-                # problem.caches[params[0]].videos.add(video_id)
-                pass
+                cache.videos_id.add(video_id)
+
+            solution.caches[cache_id] = cache
 
     return solution

@@ -42,20 +42,28 @@ class Request:
 
 
 class Cache:
-    def __init__ (self, num_id, size):
+    def __init__ (self, num_id, size=None):
         self.num_id = num_id
         self.size = size
-        self.videos = set()
+        self.videos_id = set()
         self.videos_dict = dict()
 
     def _add_video(self, video):
-        self.videos.add(video.num_id)
+        self.videos_id.add(video.num_id)
         self.videos_dict[video.num_id] = video
+
+    def __repr__(self):
+        return f"Cache({self.num_id}, {self.size}, {self.videos_id})"
 
 
 class Solution:
     def __init__(self):
-        self.caches = {}
+        self.caches = dict()
+
+    def __str__(self):
+        string = "---Solution---\n"
+        string += f"Caches: {self.caches}"
+        return string
 
 
 class Problem:
@@ -65,7 +73,7 @@ class Problem:
         self._videos = list()
         self._endpoints = list()
         self._requests = list()
-        self.caches = {}
+
 
     # Infos
     @property
