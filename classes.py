@@ -9,6 +9,10 @@ class Video:
 
     def __repr__(self):
         return "Video({num_id},{size})".format(num_id=self.num_id, size=self.size)
+    
+    def __lt__(self,vid2):
+        if type(vid2)==Video:
+            return self.num_id < vid2.num_id
 
 
 class EndPoint:
@@ -20,6 +24,9 @@ class EndPoint:
 
     def add_cache_latency(self, cache_id, latency):
         self.caches_latency[cache_id] = latency
+    
+    def get_cache_latency(self, cache_id):
+        return self.caches_latency[cache_id]
 
     def __repr__(self):
         return "EndPoint({num_id},{dc_latency},{c_latency})".format(\
@@ -44,15 +51,24 @@ class Request:
 class Cache:
     def __init__(self, num_id):
         self.num_id = num_id
-        self.videos = set()
+        self.videos = set() # or dict(). L'inconvenient de set sera si l'on souhaite modifier un cache pour le retrouver.
+        
+    def add_video(self, video):
+        self.videos.add(video)
+#        # si videos est dict()
+#        self.videos[video.num_id] = video
 
     def __repr__(self):
         return f"Cache({self.num_id}, {self.videos})"
 
 
 class Solution:
+    """Sets of caches (and their configuration)."""
     def __init__(self):
-        self.caches = dict()
+        self.caches = dict() # or set(). Dict() permet surtout d'avoir indexation.
+    
+    def add_cache(self, cache):
+        self.caches[cache.num_id] = cache
 
     def __str__(self):
         string = "---Solution---\n"
@@ -66,10 +82,13 @@ class Problem:
         self._infos = None
         self._videos = list()
         self._endpoints = list()
-        self._requests = list()
+        self._requests = set()
+        self._caches = list()
 
     @property
     def caches_id(self):
+        """Subset of caches linked to endpoints."""
+        # a priori un set proche de range(self._infos['C']) sauf s'il y a des caches isoles
         result = set()
         for endpoint in self.endpoints:
             result = result.union(endpoint.caches_latency.keys())
@@ -84,6 +103,22 @@ class Problem:
         self._infos = infos
     def set_infos(self, infos):
         self._infos = infos
+    # Expand infos into attributes
+    @property
+    def nb_videos(self):
+        return self._infos["V"]
+    @property
+    def nb_endpoints(self):
+        return self._infos["E"]
+    @property
+    def nb_requests(self):
+        return self._infos["R"]
+    @property
+    def nb_caches(self):
+        return self._infos["C"]
+    @property
+    def caches_size(self):
+        return self._infos["X"]
 
     # Videos
     @property
@@ -94,6 +129,9 @@ class Problem:
         self._videos = videos
     def set_videos(self, videos):
         self._videos = videos
+    
+    def get_video(self, video_id):
+        return self._videos[video_id]
 
     # Endpoints
     @property
@@ -104,6 +142,9 @@ class Problem:
         self._endpoints = endpoints
     def set_endpoints(self, endpoints):
         self._endpoints = endpoints
+    
+    def get_endpoint(self, endpoint_id):
+        return self._endpoints[endpoint_id]
 
     # Requests
     @property

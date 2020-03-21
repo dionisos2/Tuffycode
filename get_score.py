@@ -17,7 +17,7 @@ def get_score(problem_path, solution_path):
 def check_validity(problem, solution):
     for cache in solution.caches.values():
         videos_size = sum(video.size for video in cache.videos)
-        if videos_size > problem.infos["X"]:
+        if videos_size > problem.caches_size:
             raise ValueError(f"cache {cache} surcharged")
 
 def get_request_score(problem, solution, request):

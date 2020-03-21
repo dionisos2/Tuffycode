@@ -6,18 +6,16 @@ def create_solution(problem):
 
 
 def create_random_solution(problem):
-    cache_size = problem.infos["X"]
-
     solution = Solution()
 
     for cache_id in problem.caches_id:
         cache = Cache(cache_id)
         video = random.choice(problem.videos)
         current_size = video.size
-        while current_size < cache_size:
-            cache.videos.add(video)
+        while current_size < problem.caches_size:
+            cache.add_video(video)
             video = random.choice(problem.videos)
             current_size += video.size
-        solution.caches[cache_id] = cache
+        solution.add_cache(cache)
 
     return solution

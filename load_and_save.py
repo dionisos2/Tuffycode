@@ -92,11 +92,15 @@ def load_problem(problem_path):
             endpoints_list.append(load_endpoint(problem_file, iE))
         problem.set_endpoints(endpoints_list)
         # Next lines: requests
-        requests_list = [] # on pourrait juste faire un set (car contrairement aux videos ou endpoints, il n'y a pas d'ordre)
+        requests_set = set()
         for _ in range(problem.infos["R"]):
-            requests_list.append(load_request(problem_file.readline(), problem))
-        problem.set_requests(requests_list)
-
+            requests_set.add(load_request(problem_file.readline(), problem))
+        problem.set_requests(requests_set)
+        
+        # Init caches/solution? # to return or include into problem
+        caches_list = []
+        for iC in range(problem.infos["C"]):
+            caches_list.append(Cache(iC))
 
     return problem
 
@@ -108,7 +112,7 @@ def save_solution(solution, file_path):
     with open(file_path, "w") as solution_file:
         solution_file.write(str(len(caches)) + "\n")
         for cache in caches:
-            line = str(cache.num_id) + " " + " ".join(map(lambda x:str(vid.num_id), sorted(cache.videos)))
+            line = str(cache.num_id) + " " + " ".join(map(lambda vid:str(vid.num_id), sorted(cache.videos)))
             solution_file.write(line + "\n")
 
 def load_solution(file_path, problem):
@@ -121,8 +125,8 @@ def load_solution(file_path, problem):
             cache_id = params[0]
             cache = Cache(cache_id)
             for video_id in params[1:]:
-                cache.videos.add(problem.videos[video_id])
+                cache.add_video(problem.get_video(video_id))
 
-            solution.caches[cache_id] = cache
+            solution.add_cache(cache)
 
     return solution

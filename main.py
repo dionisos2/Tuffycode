@@ -23,4 +23,4 @@ def test_example():
     print(score == 462500)
 
 test_example()
-# main("me_at_the_zoo.in")
+main("me_at_the_zoo.in")
