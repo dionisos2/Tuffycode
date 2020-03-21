@@ -1,6 +1,4 @@
 from classes import *
-    #dio : lord il faut que tu mettes tous ça dans les objets classes associés.
-    # et par contre n’hésite pas à dire si il y a un problème.
 
 # Generic function
 def line_to_int_list(line):
@@ -23,15 +21,15 @@ if do_test_load_videos:
 
 ## == LOAD ENDPOINT ==
 
-def load_endpoint(file,num_endpoint):
+def load_endpoint(problem_file, num_endpoint):
     """Return Endpoint object"""
     # Create endpoint with data_center_latency
-    first_line = file.readline()
+    first_line = problem_file.readline()
     dc_lat, n_cache = line_to_int_list(first_line)
     endpoint = EndPoint(num_endpoint,dc_lat)
     # Add all linked caches, add latency
     for _ in range(n_cache):
-        cur_line = file.readline()
+        cur_line = problem_file.readline()
         cache_id, latency = line_to_int_list(cur_line)
         endpoint.add_cache_latency(cache_id,latency)
     return endpoint
@@ -39,13 +37,13 @@ def load_endpoint(file,num_endpoint):
 # Test load_endpoint
 do_test_load_endpoint = False
 if do_test_load_endpoint:
-    file_name = "test_load_endpoint.txt"
-    with open(file_name, "r+") as file:
+    file_name = "qualification_round_2017/example.txt"
+    with open(file_name, "r+") as problem_file:
         # First endpoint
-        endpoint = load_endpoint(file,1)
+        endpoint = load_endpoint(problem_file,1)
         print(endpoint)
         # 2nd endpoint
-        endpoint2 = load_endpoint(file,2)
+        endpoint2 = load_endpoint(problem_file,2)
         print(endpoint2)
 
 
@@ -58,7 +56,7 @@ def load_request(file_line):
 
 # Test load_request
 do_test_load_request = False
-if do_test_load_request: 
+if do_test_load_request:
     file_line = "3   0   1500 "
     request = load_request(file_line)
     print(request)
@@ -66,7 +64,7 @@ if do_test_load_request:
 
 ## == LOAD PROBLEM ==
 
-def load_problem(problem,problem_path):
+def load_problem(problem, problem_path):
     """Load a problem file."""
     # Generic parameters
     # V: nbr of videos
@@ -74,31 +72,27 @@ def load_problem(problem,problem_path):
     # R: nbr of requests
     # C: nbr of cache
     # X: size of cache
-    var = ["V","E","R","C","X"]
-    
-    with open(problem_path, "r+") as f:
-        datas = f.readline()
+    var = ["V", "E", "R", "C", "X"]
+
+    with open(problem_path, "r+") as problem_file:
+        datas = problem_file.readline()
         # First line: problem description/inputs
-        datas = list(map(lambda x:int(x), datas.split()))
+        datas = list(map(int, datas.split()))
         problem.set_infos({var[i] : datas[i] for i in range(len(var))})
         # Second line: videos (sizes)
-        videos_list = load_videos(f.readline())
+        videos_list = load_videos(problem_file.readline())
         problem.set_videos(videos_list)
         # Next lines: endpoints (latency of DC and cache)
         endpoints_list = []
         for iE in range(problem.infos["E"]):
-            endpoints_list.append(load_endpoint(f,iE))
+            endpoints_list.append(load_endpoint(problem_file, iE))
         problem.set_endpoints(endpoints_list)
         # Next lines: requests
         requests_list = []
         for _ in range(problem.infos["R"]):
-            requests_list.append(load_request(f.readline()))
+            requests_list.append(load_request(problem_file.readline()))
         problem.set_requests(requests_list)
 
-#    caches = [Cache(1)]
-#    endpoints = [EndPoint(1)]
-#    videos = [Video(1)]
-#    return (videos_list, endpoints_list, requests_list) #self.inputs, 
 
 #do_test_load_problem = False
 #if do_test_load_problem:
@@ -107,4 +101,3 @@ def load_problem(problem,problem_path):
 #    problem_path = "test_load_problem"
 #    load_problem(problem,problem_path)
 #    print(problem)
-    

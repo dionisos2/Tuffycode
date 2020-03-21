@@ -3,16 +3,12 @@ class Video:
     def __init__(self, num_id, size=1):
         self.num_id = num_id
         self.size = size
-#        self.requests = {}
-#
-#    def add_request(self, endpoint_id, nbr):
-#        self.requests[endpoint_id] = nbr
-        
+
     def set_size(self, size):
         self.size = size
-    
+
     def __repr__(self):
-        return "Video({num_id},{size})".format(num_id=self.num_id,size=self.size)
+        return "Video({num_id},{size})".format(num_id=self.num_id, size=self.size)
 
 
 class EndPoint:
@@ -38,22 +34,18 @@ class Request:
         self.vid_id = vid_id
         self.ep_id = ep_id
         self.nb_request = nb_request
-    
+
     def __repr__(self):
-        return "Request({vid_id},{ep_id},{nb_request})".format(\
-                                                    vid_id=self.vid_id,\
-                                                    ep_id=self.ep_id,\
-                                                    nb_request=self.nb_request)
-        
+        return "Request({vid_id},{ep_id},{nb_request})".format(vid_id=self.vid_id,
+                                                               ep_id=self.ep_id,
+                                                               nb_request=self.nb_request)
+
 
 class Cache:
     def __init__ (self, num_id, size):
         self.num_id = num_id
         self.size = size
-        self.videosDict = set()
-        
+        self.videos_dict = set()
+
     def _add_video(self, video):
-        self.videosDict[video.num_id] = video
-
-
-
+        self.videos_dict[video.num_id] = video
