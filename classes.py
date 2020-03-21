@@ -42,18 +42,12 @@ class Request:
 
 
 class Cache:
-    def __init__ (self, num_id, size=None):
+    def __init__(self, num_id):
         self.num_id = num_id
-        self.size = size
         self.videos_id = set()
-        self.videos_dict = dict()
-
-    def _add_video(self, video):
-        self.videos_id.add(video.num_id)
-        self.videos_dict[video.num_id] = video
 
     def __repr__(self):
-        return f"Cache({self.num_id}, {self.size}, {self.videos_id})"
+        return f"Cache({self.num_id}, {self.videos_id})"
 
 
 class Solution:
