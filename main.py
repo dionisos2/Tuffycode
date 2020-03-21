@@ -1,7 +1,7 @@
 from classes import *
 from get_score import get_score
 from load_and_save import load_problem, save_solution
-from create_solution import create_solution
+from create_solution import create_solution, create_random_solution
 
 
 def main(problem_name):
@@ -9,7 +9,7 @@ def main(problem_name):
     solution_path = f"./output/{problem_name}"
 
     problem = load_problem(problem_path)
-    solution = create_solution(problem)
+    solution = create_random_solution(problem)
     save_solution(solution, solution_path)
 
     score = get_score(problem_path, solution_path)
@@ -22,5 +22,5 @@ def test_example():
     print(score)
     print(score == 462500)
 
-test_example()
-# main("me_at_the_zoo.in")
+# test_example()
+main("me_at_the_zoo.in")

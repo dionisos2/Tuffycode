@@ -68,6 +68,12 @@ class Problem:
         self._endpoints = list()
         self._requests = list()
 
+    @property
+    def caches_id(self):
+        result = set()
+        for endpoint in self.endpoints:
+            result = result.union(endpoint.caches_latency.keys())
+        return result
 
     # Infos
     @property

@@ -100,11 +100,11 @@ def load_problem(problem_path):
 
 
 def save_solution(solution, file_path):
-    caches = sorted(solution.caches.values())
+    caches = sorted(solution.caches.values(), key=lambda cache:cache.num_id)
     with open(file_path, "w") as solution_file:
         solution_file.write(str(len(caches)) + "\n")
         for cache in caches:
-            line = cache.num_id + " " + " ".join(sorted(cache.videos))
+            line = str(cache.num_id) + " " + " ".join(map(str, sorted(cache.videos_id)))
             solution_file.write(line + "\n")
 
 def load_solution(file_path):
