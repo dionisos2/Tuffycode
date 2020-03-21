@@ -16,14 +16,14 @@ def get_score(problem_path, solution_path):
 
 def check_validity(problem, solution):
     for cache in solution.caches.values():
-        videos_size = sum(video.size for video in problem.videos if video.num_id in cache.videos_id)
+        videos_size = sum(video.size for video in cache.videos)
         if videos_size > problem.infos["X"]:
             raise ValueError(f"cache {cache} surcharged")
 
 def get_request_score(problem, solution, request):
     best_cache_latency = get_best_cache_latency(problem, solution, request)
 
-    dc_latency = problem.endpoints[request.ep_id].dc_latency
+    dc_latency = request.endpoint.dc_latency
 
     if best_cache_latency < dc_latency:
         return (dc_latency - best_cache_latency) * request.nb_request
@@ -34,9 +34,9 @@ def get_request_score(problem, solution, request):
 def get_best_cache_latency(problem, solution, request):
     best_latency = float("inf")
 
-    endpoint = problem.endpoints[request.ep_id]
-    for caches_id, cache_latency in endpoint.caches_latency.items():
-        if request.vid_id in solution.caches[caches_id].videos_id:
+    endpoint = request.endpoint
+    for cache_id, cache_latency in endpoint.caches_latency.items():
+        if request.video in solution.caches[cache_id]: # j'ai fait un test simple de in et normalement ca devrait etre ok. Sinon, faudra ptet redefinir un __contains__ ou du genre
             best_latency = min(best_latency, cache_latency)
 
     return best_latency

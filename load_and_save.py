@@ -48,16 +48,18 @@ def test_load_endpoint():
 
 ## == LOAD REQUEST ==
 
-def load_request(file_line):
+def load_request(file_line, problem):
     """Return Request object"""
     vid_id,ep_id,nb_request = line_to_int_list(file_line)
-    return Request(vid_id,ep_id,nb_request)
+    return Request(problem.videos[vid_id],problem.endpoints[ep_id],nb_request)
 
 def test_load_request():
     do_test_load_request = False
     if do_test_load_request:
         file_line = "3   0   1500 "
-        request = load_request(file_line)
+        problem = Problem()
+        # Test plus valide car problem n'est pas charge
+        request = load_request(file_line, problem)
         print(request)
 
 
@@ -90,7 +92,7 @@ def load_problem(problem_path):
             endpoints_list.append(load_endpoint(problem_file, iE))
         problem.set_endpoints(endpoints_list)
         # Next lines: requests
-        requests_list = []
+        requests_list = [] # on pourrait juste faire un set (car contrairement aux videos ou endpoints, il n'y a pas d'ordre)
         for _ in range(problem.infos["R"]):
             requests_list.append(load_request(problem_file.readline()))
         problem.set_requests(requests_list)

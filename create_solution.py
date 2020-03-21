@@ -15,7 +15,7 @@ def create_random_solution(problem):
         video = random.choice(problem.videos)
         current_size = video.size
         while current_size < cache_size:
-            cache.videos_id.add(video.num_id)
+            cache.videos.add(video)
             video = random.choice(problem.videos)
             current_size += video.size
         solution.caches[cache_id] = cache

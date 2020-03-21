@@ -30,24 +30,24 @@ class EndPoint:
 
 class Request:
     """Video request."""
-    def __init__(self, vid_id, ep_id, nb_request):
-        self.vid_id = vid_id
-        self.ep_id = ep_id
+    def __init__(self, video, endpoint, nb_request):
+        self.video = video
+        self.endpoint = endpoint
         self.nb_request = nb_request
 
     def __repr__(self):
-        return "Request({vid_id},{ep_id},{nb_request})".format(vid_id=self.vid_id,
-                                                               ep_id=self.ep_id,
+        return "Request({video},{endpoint},{nb_request})".format(video=self.video,
+                                                               endpoint=self.endpoint,
                                                                nb_request=self.nb_request)
 
 
 class Cache:
     def __init__(self, num_id):
         self.num_id = num_id
-        self.videos_id = set()
+        self.videos = set()
 
     def __repr__(self):
-        return f"Cache({self.num_id}, {self.videos_id})"
+        return f"Cache({self.num_id}, {self.videos})"
 
 
 class Solution:
