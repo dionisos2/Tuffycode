@@ -36,7 +36,7 @@ def create_solution(problem):
         best_addition = get_best_additions(problem, possible_additions)
         add_video(problem, solution, best_addition)
         additions_to_remove = get_additions_to_remove(solution, possible_additions, best_addition)
-        recalculate_score(possible_additions, links_to_additions, best_addition)
+        recalculate_score(problem, possible_additions, links_to_additions, best_addition)
 
         for id_addition in additions_to_remove:
             del possible_additions[id_addition]
@@ -87,7 +87,7 @@ def create_links_to_additions(problem):
     return result
 
 """Get the score of a video for a particular cache"""
-def get_video_score(problem, video, cache):
+def get_video_score(problem, video_id, cache_id):
     return 0
 
 """Return the current best possible additions (max of score/size)"""
@@ -100,8 +100,12 @@ def add_video(problem, solution, best_addition):
     pass
 
 """ recalculate the score of all possible additions that require modification"""
-def recalculate_score(possible_additions, links_to_additions, best_addition):
-    pass
+def recalculate_score(problem, possible_additions, links_to_additions, best_addition):
+    additions_to_change = links_to_additions[best_addition.video_id][best_addition.cache_id]
+
+    for addition_id in additions_to_change:
+        (video_id, cache_id) = addition_id
+        possible_additions[addition_id].score = get_video_score(problem, video_id, cache_id)
 
 """ Get a list of the id of all the additions to remove (for which the video would surcharge the size of the cache) """
 def get_additions_to_remove(solution, possible_additions, best_addition):
