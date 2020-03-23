@@ -99,7 +99,15 @@ def create_links_to_additions(problem):
 
 """Get the score of a video for a particular cache"""
 def get_video_score(problem, video_id, cache_id):
-    return 0
+    latency_gain = 0
+    nb_request = 0
+    endpoints_of_cache = create_cache_to_enpoints_link(problem)[cache_id]
+    for endpoint_id in endpoints_of_cache: 
+        latency _gain+= problem.endpoints[iendpoint_id].dc_latency[cache_id] - problem.endpoints[iendpoint_id].caches_latency[cache_id]
+        for requests in problem.requests: 
+            if requests.video.num_id == video_id and requests.endpoint.num_id = endpoint_id: 
+                nb_request += problem.requests[id_request].nb_request
+    return nb_request*latency_gain
 
 """Return the current best possible additions (max of score/size)"""
 def get_best_additions(problem, possible_additions):
