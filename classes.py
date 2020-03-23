@@ -9,7 +9,7 @@ class Video:
 
     def __repr__(self):
         return "Video({num_id},{size})".format(num_id=self.num_id, size=self.size)
-    
+
     def __lt__(self,vid2):
         if type(vid2)==Video:
             return self.num_id < vid2.num_id
@@ -22,9 +22,12 @@ class EndPoint:
         self.dc_latency = dc_latency
         self.caches_latency = dict()
 
+    def get_connected_caches_id(self):
+        return list(self.caches_latency.keys())
+
     def add_cache_latency(self, cache_id, latency):
         self.caches_latency[cache_id] = latency
-    
+
     def get_cache_latency(self, cache_id):
         return self.caches_latency[cache_id]
 
@@ -52,7 +55,7 @@ class Cache:
     def __init__(self, num_id):
         self.num_id = num_id
         self.videos = set() # or dict(). L'inconvenient de set sera si l'on souhaite modifier un cache pour le retrouver.
-        
+
     def add_video(self, video):
         self.videos.add(video)
 #        # si videos est dict()
@@ -66,7 +69,7 @@ class Solution:
     """Sets of caches (and their configuration)."""
     def __init__(self):
         self.caches = dict() # or set(). Dict() permet surtout d'avoir indexation.
-    
+
     def add_cache(self, cache):
         self.caches[cache.num_id] = cache
 
@@ -129,7 +132,7 @@ class Problem:
         self._videos = videos
     def set_videos(self, videos):
         self._videos = videos
-    
+
     def get_video(self, video_id):
         return self._videos[video_id]
 
@@ -142,7 +145,7 @@ class Problem:
         self._endpoints = endpoints
     def set_endpoints(self, endpoints):
         self._endpoints = endpoints
-    
+
     def get_endpoint(self, endpoint_id):
         return self._endpoints[endpoint_id]
 

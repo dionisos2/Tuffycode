@@ -20,8 +20,8 @@ def create_random_solution(problem):
 
 
 class Addition:
-    def __init__(self, num_id, id_video, id_cache):
-        self.num_id = num_id
+    def __init__(self, id_video, id_cache):
+        self.couple_id = (id_video, id_cache)
         self.id_video = id_video
         self.id_cache = id_cache
         self.score = None
@@ -30,7 +30,7 @@ class Addition:
 def create_solution(problem):
     solution = Solution()
     possible_additions = create_possible_additions(problem)
-    links_to_additions = create_links_to_additions(problem, possible_additions)
+    links_to_additions = create_links_to_additions(problem)
 
     while len(possible_additions) > 0:
         best_addition = get_best_additions(problem, possible_additions)
@@ -49,11 +49,41 @@ def create_solution(problem):
 def create_possible_additions(problem):
     return dict()
 
+"""Create a dict assotiating each cache to their connected endpoints"""
+def create_cache_to_endpoints_link(problem):
+    cache_to_endpoints = dict()
+    for endpoint in problem.endpoints:
+        connected_caches_id = endpoint.get_connected_caches_id()
+        for cache_id in connected_caches_id:
+            if cache_id in cache_to_endpoints:
+                cache_to_endpoints[cache_id].append(endpoint.num_id)
+            else:
+                cache_to_endpoints[cache_id] = [endpoint.num_id]
+    return cache_to_endpoints
+
+
 """Create a dict of dict, allowing to get all additions we should modify for a particular video and a particular cache"""
-def create_links_to_additions(problem, possible_additions):
+def create_links_to_additions(problem):
     result = dict()
-    #result[id_video] = dict()
-    #result[id_video][id_cache] = [id_addition]
+    cache_to_endpoints = create_cache_to_endpoints_link(problem)
+
+
+    for video in problem.videos:
+        result[video.num_id] = dict()
+
+        for current_cache_id in problem.caches_id:
+            connected_caches_id = set()
+            connected_endpoints = cache_to_endpoints[current_cache_id]
+
+            for endpoint_id in connected_endpoints:
+                new_caches_id = problem.endpoints[endpoint_id].get_connected_caches_id()
+                connected_caches_id = connected_caches_id.union(new_caches_id)
+
+            result[video.num_id][current_cache_id] = []
+            for cache_id in connected_caches_id:
+                addition_id = (video.num_id, cache_id)
+                result[video.num_id][current_cache_id].append(addition_id)
+
     return result
 
 """Get the score of a video for a particular cache"""
