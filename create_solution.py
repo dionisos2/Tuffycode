@@ -67,27 +67,29 @@ Double dict indexed by a video and a cache (i.e. an addition).
 Each value is a set of caches that are linked to this cache.
 """
 def create_links_to_additions(problem):
-    result = dict()
+    # Dans cette construction, les caches lies ne sont pas video-dependant.
 
+    linked_caches = dict()
+    for current_cache_id in problem.caches_id:
+        connected_caches_id = set()
+
+        # current_cache (1) -> linked_endpoints (n) -> linked_caches(m>n)
+        connected_endpoints = problem.get_endpoints_of_cache(current_cache_id)
+        for endpoint_id in connected_endpoints:
+            new_caches_id = problem.get_endpoint(endpoint_id).get_connected_caches_id()
+            connected_caches_id = connected_caches_id.union(new_caches_id)
+
+        linked_caches[current_cache_id] = connected_caches_id
+
+    result = dict()
     for video in problem.videos:
         result[video.num_id] = dict()
+        for current_cache_id in problem.caches_id:
+            current_addition_id = (video.num_id, current_cache_id)
 
-        # ? Attention, dans cette construction, les caches lies ne sont pas video-dependant.
-        # Ici l'indexation par la video_id n'est pas specifique ?
-        for current_id_cache in problem.caches_id:
-            connected_caches_id = set()
-
-            # curCach (1) -> linkedEP (n) -> linkedCaches(m>n)
-            connected_endpoints = problem.get_endpoints_of_cache(current_id_cache)
-            for endpoint_id in connected_endpoints:
-                new_caches_id = problem.get_endpoint(endpoint_id).get_connected_caches_id()
-                connected_caches_id = connected_caches_id.union(new_caches_id)
-
-            #
-            result[video.num_id][current_id_cache] = []
-            for id_cache in connected_caches_id:
-                addition_id = (video.num_id, id_cache)
-                result[video.num_id][current_id_cache].append(addition_id)
+            connected_caches_id = linked_caches[current_cache_id]
+            connected_additions_id = [(video.num_id, cache_id) for cache_id in connected_caches_id]
+            result[current_addition_id] = connected_additions_id
 
     return result
 

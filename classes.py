@@ -91,7 +91,7 @@ class Problem:
 
     """ Return the endpoints connected to the cache identified by id_cache"""
     def get_endpoints_of_cache(self, id_cache):
-        if len(self._endpoints_of_cache) > 0:
+        if len(self._endpoints_of_cache) == 0:
             self._create_cache_to_endpoints_link()
 
         return self._endpoints_of_cache[id_cache]

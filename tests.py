@@ -11,10 +11,6 @@ def test_create_links_to_additions():
 
     print(problem)
 
-    cache_to_endpoints = create_cache_to_endpoints_link(problem)
-
-    print(cache_to_endpoints)
-
     links = create_links_to_additions(problem)
     print(links)
 
