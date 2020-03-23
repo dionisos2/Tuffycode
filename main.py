@@ -9,7 +9,8 @@ def main(problem_name):
     solution_path = f"./output/{problem_name}"
 
     problem = load_problem(problem_path)
-    solution = create_random_solution(problem)
+    # solution = create_random_solution(problem)
+    solution = create_solution(problem)
     save_solution(solution, solution_path)
 
     score = get_score(problem_path, solution_path)

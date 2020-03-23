@@ -86,7 +86,6 @@ class Problem:
         self._videos = list()
         self._endpoints = list()
         self._requests = set()
-        self._caches = list()
         self._endpoints_of_cache = dict()
 
     """ Return the endpoints connected to the cache identified by id_cache"""

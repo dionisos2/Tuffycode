@@ -8,13 +8,14 @@ def test_create_links_to_additions():
     # problem_path = "./input/me_at_the_zoo.in"
 
     problem = load_problem(problem_path)
+    solution = Solution()
 
     print(problem)
 
     links = create_links_to_additions(problem)
     print(links)
 
-    possible_additions = create_possible_additions(problem)
+    possible_additions = create_possible_additions(problem, solution)
     print(possible_additions)
 
     possible_additions[(2,1)].score = 3
