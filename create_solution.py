@@ -32,6 +32,10 @@ class Addition:
 
 def create_solution(problem):
     solution = Solution()
+
+    for id_cache in range(problem.nb_caches):
+        solution.add_cache(Cache(id_cache))
+
     possible_additions = create_possible_additions(problem, solution)
     links_to_additions = create_links_to_additions(problem)
 
@@ -43,8 +47,9 @@ def create_solution(problem):
 
         for id_addition in additions_to_remove:
             del possible_additions[id_addition]
-        if best_addition.num_id in possible_additions:
-            del possible_additions[best_addition.num_id]
+
+        if best_addition.couple_id in possible_additions:
+            del possible_additions[best_addition.couple_id]
 
     return solution
 
@@ -102,9 +107,9 @@ def get_video_score(problem, solution, id_video, id_cache):
         endpoint = problem.endpoints[endpoint_id]
         possible_latencies = [endpoint.dc_latency]
 
-        for cache in solution.caches:
+        for cache in solution.caches.values():
             if video in cache.videos:
-                possible_latencies.append(problem.caches_latency[id_cache])
+                possible_latencies.append(endpoint.caches_latency[id_cache])
 
         best_latency = min(possible_latencies)
         latency_gain = max(0, best_latency - endpoint.caches_latency[id_cache])
@@ -134,20 +139,16 @@ def add_video(problem, solution, best_addition):
     video = problem.videos[id_video]
     id_cache = best_addition.id_cache
 
-    if id_cache in solution.caches:
-        solution.caches[id_cache].add_video(video)
-    else:
-        cache = Cache(id_cache)
-        cache.add_video(video)
-        solution.caches[id_cache] = cache
+    solution.caches[id_cache].add_video(video)
 
 """ recalculate the score of all possible additions that require modification"""
 def recalculate_score(problem, solution, possible_additions, links_to_additions, best_addition):
-    additions_to_change = links_to_additions[best_addition.id_video][best_addition.id_cache]
+    additions_to_change = links_to_additions[best_addition.couple_id]
 
     for addition_id in additions_to_change:
         (id_video, id_cache) = addition_id
-        possible_additions[addition_id].score = get_video_score(problem, solution, id_video, id_cache)
+        if addition_id in possible_additions:
+            possible_additions[addition_id].score = get_video_score(problem, solution, id_video, id_cache)
 
 """ Get a list of the id of all the additions to remove (for which the video would surcharge the size of the cache) """
 def get_additions_to_remove(problem, solution, possible_additions, best_addition):
