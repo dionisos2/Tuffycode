@@ -26,6 +26,9 @@ class Addition:
         self.id_cache = id_cache
         self.score = None
 
+    def __repr__(self):
+        return f"Addition({self.id_video}, {self.id_cache}, {self.score})"
+
 
 def create_solution(problem):
     solution = Solution()
@@ -47,7 +50,15 @@ def create_solution(problem):
 
 """Create a dict of all possibles additions"""
 def create_possible_additions(problem):
-    return dict()
+    possible_additions = dict()
+
+    for video in problem.videos:
+        video_id = video.num_id
+        for cache_id in problem.caches_id:
+            addition = Addition(video_id, cache_id)
+            addition.score = get_video_score(problem, video_id, cache_id)
+            possible_additions[(video_id, cache_id)] = addition
+    return possible_additions
 
 """Create a dict assotiating each cache to their connected endpoints"""
 def create_cache_to_endpoints_link(problem):
@@ -92,7 +103,14 @@ def get_video_score(problem, video_id, cache_id):
 
 """Return the current best possible additions (max of score/size)"""
 def get_best_additions(problem, possible_additions):
-    return possible_additions[1]
+
+    def value_of_addition(addition):
+        size = problem.videos[addition.id_video].size
+        return addition.score/size
+
+    best_addition = max(possible_additions.values(), key=value_of_addition)
+
+    return best_addition
 
 
 """Add a video to the correct cache of the solution"""
