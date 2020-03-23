@@ -87,6 +87,28 @@ class Problem:
         self._endpoints = list()
         self._requests = set()
         self._caches = list()
+        self._endpoints_of_cache = dict()
+
+    """ Return the endpoints connected to the cache identified by id_cache"""
+    def get_endpoints_of_cache(self, id_cache):
+        if len(self._endpoints_of_cache) > 0:
+            self._create_cache_to_endpoints_link()
+
+        return self._endpoints_of_cache[id_cache]
+
+    """Create a dict assotiating each cache to their connected endpoints"""
+    def _create_cache_to_endpoints_link(self):
+        if len(self._endpoints_of_cache) > 0:
+            raise RuntimeError("create_cache_to_endpoints_link should be call only one time")
+
+        for endpoint in self.endpoints:
+            connected_caches_id = endpoint.get_connected_caches_id()
+            for id_cache in connected_caches_id:
+                if id_cache in self._endpoints_of_cache:
+                    self._endpoints_of_cache[id_cache].append(endpoint.num_id)
+                else:
+                    self._endpoints_of_cache[id_cache] = [endpoint.num_id]
+
 
     @property
     def caches_id(self):
