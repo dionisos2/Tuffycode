@@ -79,29 +79,35 @@ Double dict indexed by a video and a cache (i.e. an addition).
 Each value is a set of caches that are linked to this cache.
 """
 def create_links_to_additions(problem):
-    result = dict()
     cache_to_endpoints = create_cache_to_endpoints_link(problem)
-
+    
+    
+    # ? Attention, dans cette construction, les caches lies ne sont pas video-dependant.
+    # Ici l'indexation par la video_id n'est pas specifique ?
+    linked_caches = dict()
+    for current_cache_id in problem.caches_id:
+        connected_caches_id = set()
+        
+        # curCach (1) -> linkedEP (n) -> linkedCaches(m>n)
+        connected_endpoints = cache_to_endpoints[current_cache_id]
+        for endpoint_id in connected_endpoints:
+            new_caches_id = problem.get_endpoint(endpoint_id).get_connected_caches_id()
+            connected_caches_id = connected_caches_id.union(new_caches_id)
+        
+        linked_caches[current_cache_id] = connected_caches_id
+        
+    # 
+    result = dict()
     for video in problem.videos:
         result[video.num_id] = dict()
-        
-        # ? Attention, dans cette construction, les caches lies ne sont pas video-dependant.
-        # Ici l'indexation par la video_id n'est pas specifique ?
-        for current_id_cache in problem.caches_id:
-            connected_caches_id = set()
+        for current_cache_id in problem.caches_id:
+            current_addition_id = (video.num_id, current_cache_id)
             
-            # curCach (1) -> linkedEP (n) -> linkedCaches(m>n)
-            connected_endpoints = cache_to_endpoints[current_id_cache]
-            for endpoint_id in connected_endpoints:
-                new_caches_id = problem.get_endpoint(endpoint_id).get_connected_caches_id()
-                connected_caches_id = connected_caches_id.union(new_caches_id)
+            connected_caches_id = linked_caches[current_cache_id]
+            # C'était pour eviter la 3e boucle. Mais pas plus clair.
+            connected_additions_id = list(zip([video.num_id]*len(connected_caches_id),connected_caches_id))
+            result[current_addition_id] = connected_additions_id # par contre, je suis pas sur de la perennite du pointeur sur la liste connected_additions_id ?
             
-            # 
-            result[video.num_id][current_id_cache] = []
-            for id_cache in connected_caches_id:
-                addition_id = (video.num_id, id_cache)
-                result[video.num_id][current_id_cache].append(addition_id)
-
     return result
 
 """Get the score of a video for a particular cache"""
