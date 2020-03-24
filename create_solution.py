@@ -114,8 +114,8 @@ def get_video_score(problem, solution, id_video, id_cache):
         best_latency = min(possible_latencies)
         latency_gain = max(0, best_latency - endpoint.caches_latency[id_cache])
 
-        for request in problem.requests:
-            if request.video.num_id == id_video and request.endpoint.num_id == endpoint_id:
+        for request in problem.get_request_of_endpoint(endpoint_id):
+            if request.video.num_id == id_video:
                 score += latency_gain * request.nb_request
 
     return score

@@ -1,3 +1,4 @@
+from pip._vendor.requests.api import request
 class Video:
     """Video class."""
     def __init__(self, num_id, size=1):
@@ -32,10 +33,7 @@ class EndPoint:
         return self.caches_latency[cache_id]
 
     def __repr__(self):
-        return "EndPoint({num_id},{dc_latency},{c_latency})".format(\
-                                                num_id=self.num_id,\
-                                                dc_latency=self.dc_latency,\
-                                                c_latency=self.caches_latency)
+        return f"EndPoint({num_id},{dc_latency},{c_latency})")
 
 
 class Request:
@@ -46,9 +44,7 @@ class Request:
         self.nb_request = nb_request
 
     def __repr__(self):
-        return "Request({video},{endpoint},{nb_request})".format(video=self.video,
-                                                               endpoint=self.endpoint,
-                                                               nb_request=self.nb_request)
+        return f"Request({video},{endpoint},{nb_request})")
 
 
 class Cache:
@@ -87,15 +83,16 @@ class Problem:
         self._endpoints = list()
         self._requests = set()
         self._endpoints_of_cache = dict()
+        self._requests_of_endpoint = dict())
 
-    """ Return the endpoints connected to the cache identified by id_cache"""
+    """ Return the endPoints connected to the cache identified by id_cache"""
     def get_endpoints_of_cache(self, id_cache):
         if len(self._endpoints_of_cache) == 0:
             self._create_cache_to_endpoints_link()
 
         return self._endpoints_of_cache[id_cache]
 
-    """Create a dict assotiating each cache to their connected endpoints"""
+    """Create a dictionary associating each cache to their connected endPoints"""
     def _create_cache_to_endpoints_link(self):
         if len(self._endpoints_of_cache) > 0:
             raise RuntimeError("create_cache_to_endpoints_link should be call only one time")
@@ -107,6 +104,34 @@ class Problem:
                     self._endpoints_of_cache[id_cache].append(endpoint.num_id)
                 else:
                     self._endpoints_of_cache[id_cache] = [endpoint.num_id]
+                  
+                    
+                    
+    """ Return the endPoints connected to the cache identified by id_cache"""
+    def get_requests_of_endpoint(self, id_endpoint):
+        if len(self._requests_of_endpoint) == 0:
+            self._create_endpoint_to_request_link()
+
+        return self._requests_of_endpoint[id_endpoint]
+    
+    """Create a dictionary associating each cache to their connected requests"""
+    def _create_endpoint_to_request_link(self):
+        if len(self._requests_of_endpoint) > 0:
+            raise RuntimeError("create_cache_to_endpoints_link should be call only one time")
+        
+        request_dict  = dict()
+        for iE in range (self._infos["E"]):
+            request_dict[iE] = []
+        for request in self._requests :
+            request_dict[request.endpoint.num_id] = request
+
+
+
+
+
+
+
+
 
 
     @property

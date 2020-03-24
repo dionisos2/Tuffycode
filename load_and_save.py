@@ -86,12 +86,14 @@ def load_problem(problem_path):
         # Second line: videos (sizes)
         videos_list = load_videos(problem_file.readline())
         problem.set_videos(videos_list)
-        # Next lines: endpoints (latency of DC and cache)
+        # Next lines: endPoints (latency of DC and cache)
         endpoints_list = []
         for iE in range(problem.infos["E"]):
             endpoints_list.append(load_endpoint(problem_file, iE))
         problem.set_endpoints(endpoints_list)
-        # Next lines: requests
+        
+        # Next lines: requests (dictionary)
+        
         requests_set = set()
         for _ in range(problem.infos["R"]):
             requests_set.add(load_request(problem_file.readline(), problem))
