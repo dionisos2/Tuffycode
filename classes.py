@@ -1,4 +1,4 @@
-from pip._vendor.requests.api import request # ?
+
 
 class Video:
     """Video class."""
@@ -83,41 +83,53 @@ class Problem:
         self._videos = list()
         self._endpoints = list()
         self._requests = set()
-        self._endpoints_of_cache = dict()
-        self._requests_of_endpoint = dict()
+        # >> Constructed look-up table <<
+        # Between: endpoints <-> cache
+        #   | ep -> cache is straightforward
+        #   | cache -> ep is not
+        self._endpoints_of_caches_link = dict()
+        # Between: request <-> endpoints
+        #   | req -> ep is straightforward
+        #   | ep -> req is not
+        self._requests_of_endpoints_link = dict()
+        # Between: request <-> videos/caches ?
+        self._requests_of_videos_link = dict() # in particular for video scoring ?
 
-    """ Return the endPoints connected to the cache identified by id_cache"""
-    def get_endpoints_of_cache(self, id_cache):
-        if len(self._endpoints_of_cache) == 0:
-            self._create_cache_to_endpoints_link()
+    # Links: endpoints <- cache
+    def get_endpoints_of_cache(self, cache_id):
+        """ Return endPoints connected to the cache identified by cache_id."""
+        if len(self._endpoints_of_caches_link) == 0:
+            self._create_endpoints_of_caches_link()
 
-        return self._endpoints_of_cache[id_cache]
+        return self._endpoints_of_caches_link[cache_id]
 
-    """Create a dictionary associating each cache to their connected endPoints"""
-    def _create_cache_to_endpoints_link(self):
-        if len(self._endpoints_of_cache) > 0:
-            raise RuntimeError("create_cache_to_endpoints_link should be call only one time")
+    def _create_endpoints_of_caches_link(self):
+        """Create a dictionary associating each cache to their connected endPoints."""
+        if len(self._endpoints_of_caches_link) > 0:
+            raise RuntimeError("create_endpoints_of_caches_link should be call only one time")
 
         for endpoint in self.endpoints:
             connected_caches_id = endpoint.get_connected_caches_id()
-            for id_cache in connected_caches_id:
-                if id_cache in self._endpoints_of_cache:
-                    self._endpoints_of_cache[id_cache].append(endpoint.num_id)
+            for cache_id in connected_caches_id:
+                if cache_id in self._endpoints_of_caches_link:
+                    self._endpoints_of_caches_link[cache_id].append(endpoint.num_id)
                 else:
-                    self._endpoints_of_cache[id_cache] = [endpoint.num_id]
+                    self._endpoints_of_caches_link[cache_id] = [endpoint.num_id]
                                       
-    """ Return the endPoints connected to the cache identified by id_cache"""
-    def get_requests_of_endpoint(self, id_endpoint):
-        if len(self._requests_of_endpoint) == 0:
-            self._create_endpoint_to_request_link()
+    # Links: requests <- endpoint
+    def get_requests_of_endpoint(self, endpoint_id):
+        """ Return requests called from endpoint identified by endpoint_id."""
+        if len(self._requests_of_endpoints_link) == 0:
+            self._create_requests_of_endpoints_link()
 
-        return self._requests_of_endpoint[id_endpoint]
+        return self._requests_of_endpoints_link[endpoint_id]
     
-    """Create a dictionary associating each cache to their connected requests"""
-    def _create_endpoint_to_request_link(self):
-        if len(self._requests_of_endpoint) > 0:
-            raise RuntimeError("create_cache_to_endpoints_link should be call only one time")
+    def _create_requests_of_endpoints_link(self):
+        """Create a dictionary associating each endpoint to their connected requests."""
+        if len(self._requests_of_endpoints_link) > 0:
+            raise RuntimeError("create_requests_of_endpoints_link should be call only one time")
         
+        # Peut-etre reprendre le code de _create_endpoints_of_caches_link ?
         request_dict  = dict()
         for iE in range (self._infos["E"]):
             request_dict[iE] = []

@@ -1,6 +1,7 @@
 import random
 from classes import *
 
+# %% Random solution
 
 def create_random_solution(problem):
     solution = Solution()
@@ -18,23 +19,24 @@ def create_random_solution(problem):
     return solution
 
 
+# %% Optimized solution
 
 class Addition:
-    def __init__(self, id_video, id_cache):
-        self.couple_id = (id_video, id_cache)
-        self.id_video = id_video
-        self.id_cache = id_cache
+    def __init__(self, video_id, cache_id):
+        self.couple_id = (video_id, cache_id)
+        self.video_id = video_id
+        self.cache_id = cache_id
         self.score = None
 
     def __repr__(self):
-        return f"Addition({self.id_video}, {self.id_cache}, {self.score})"
+        return f"Addition({self.video_id}, {self.cache_id}, {self.score})"
 
 
 def create_solution(problem):
     solution = Solution()
 
-    for id_cache in range(problem.nb_caches):
-        solution.add_cache(Cache(id_cache))
+    for cache_id in range(problem.nb_caches):
+        solution.add_cache(Cache(cache_id))
 
     possible_additions = create_possible_additions(problem, solution)
     links_to_additions = create_links_to_additions(problem)
@@ -45,13 +47,15 @@ def create_solution(problem):
         additions_to_remove = get_additions_to_remove(problem, solution, possible_additions, best_addition)
         recalculate_score(problem, solution, possible_additions, links_to_additions, best_addition)
 
-        for id_addition in additions_to_remove:
-            del possible_additions[id_addition]
+        for addition_id in additions_to_remove:
+            del possible_additions[addition_id]
 
         if best_addition.couple_id in possible_additions:
             del possible_additions[best_addition.couple_id]
 
     return solution
+
+# %% Prepare struture for additions manipulation
 
 """Create a dict of all possibles additions"""
 # Initiate and compute additions' score.
@@ -59,10 +63,10 @@ def create_possible_additions(problem, solution):
     possible_additions = dict()
 
     for video in problem.videos:
-        id_video = video.num_id
-        for id_cache in problem.caches_id:
-            addition = Addition(id_video, id_cache)
-            addition.score = get_video_score(problem, solution, id_video, id_cache)
+        video_id = video.num_id
+        for cache_id in problem.caches_id:
+            addition = Addition(video_id, cache_id)
+            addition.score = get_video_score(problem, solution, video_id, cache_id)
             possible_additions[addition.couple_id] = addition
     return possible_additions
 
@@ -98,34 +102,37 @@ def create_links_to_additions(problem):
 
     return result
 
-"""Get the score of a video for a particular cache"""
-def get_video_score(problem, solution, id_video, id_cache):
-    video = problem.videos[id_video]
+# %% Score functions
+
+def get_video_score(problem, solution, video_id, cache_id):
+    """Get the score of a video for a particular cache."""
+    video = problem.videos[video_id]
     score = 0
 
-    for endpoint_id in problem.get_endpoints_of_cache(id_cache):
+    for endpoint_id in problem.get_endpoints_of_cache(cache_id):
         endpoint = problem.endpoints[endpoint_id]
         possible_latencies = [endpoint.dc_latency]
 
         for cache in solution.caches.values():
             if video in cache.videos:
-                possible_latencies.append(endpoint.caches_latency[id_cache])
+                possible_latencies.append(endpoint.caches_latency[cache_id])
 
         best_latency = min(possible_latencies)
-        latency_gain = max(0, best_latency - endpoint.caches_latency[id_cache])
+        latency_gain = max(0, best_latency - endpoint.caches_latency[cache_id])
 
-        for request in problem.get_request_of_endpoint(endpoint_id):
-            if request.video.num_id == id_video:
+        for request in problem.get_requests_of_endpoint(endpoint_id):
+            if request.video.num_id == video_id:
                 score += latency_gain * request.nb_request
 
     return score
 
+# %% Optimization iteration functions
 
 """Return the current best possible additions (max of score/size)"""
 def get_best_additions(problem, possible_additions):
 
     def value_of_addition(addition):
-        size = problem.videos[addition.id_video].size
+        size = problem.videos[addition.video_id].size
         return addition.score/size
 
     best_addition = max(possible_additions.values(), key=value_of_addition)
@@ -135,20 +142,20 @@ def get_best_additions(problem, possible_additions):
 
 """Add a video to the correct cache of the solution"""
 def add_video(problem, solution, best_addition):
-    id_video = best_addition.id_video
-    video = problem.videos[id_video]
-    id_cache = best_addition.id_cache
+    video_id = best_addition.video_id
+    video = problem.videos[video_id]
+    cache_id = best_addition.cache_id
 
-    solution.caches[id_cache].add_video(video)
+    solution.caches[cache_id].add_video(video)
 
 """ recalculate the score of all possible additions that require modification"""
 def recalculate_score(problem, solution, possible_additions, links_to_additions, best_addition):
     additions_to_change = links_to_additions[best_addition.couple_id]
 
     for addition_id in additions_to_change:
-        (id_video, id_cache) = addition_id
+        (video_id, cache_id) = addition_id
         if addition_id in possible_additions:
-            possible_additions[addition_id].score = get_video_score(problem, solution, id_video, id_cache)
+            possible_additions[addition_id].score = get_video_score(problem, solution, video_id, cache_id)
 
 """ Get a list of the id of all the additions to remove (for which the video would surcharge the size of the cache) """
 def get_additions_to_remove(problem, solution, possible_additions, best_addition):
@@ -156,9 +163,9 @@ def get_additions_to_remove(problem, solution, possible_additions, best_addition
     max_size = problem.caches_size
 
     for addition_id in possible_additions.keys():
-        id_video, id_cache = addition_id
-        video_size = problem.videos[id_video].size
-        current_size = sum(video.size for video in solution.caches[id_cache].videos)
+        video_id, cache_id = addition_id
+        video_size = problem.videos[video_id].size
+        current_size = sum(video.size for video in solution.caches[cache_id].videos)
         if current_size + video_size > max_size:
             addition_to_remove.append(addition_id)
 

@@ -93,7 +93,6 @@ def load_problem(problem_path):
         problem.set_endpoints(endpoints_list)
         
         # Next lines: requests (dictionary)
-        
         requests_set = set()
         for _ in range(problem.infos["R"]):
             requests_set.add(load_request(problem_file.readline(), problem))
