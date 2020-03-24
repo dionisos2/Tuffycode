@@ -1,4 +1,5 @@
-from pip._vendor.requests.api import request
+from pip._vendor.requests.api import request # ?
+
 class Video:
     """Video class."""
     def __init__(self, num_id, size=1):
@@ -33,7 +34,7 @@ class EndPoint:
         return self.caches_latency[cache_id]
 
     def __repr__(self):
-        return f"EndPoint({num_id},{dc_latency},{c_latency})"
+        return f"EndPoint({self.num_id},{self.dc_latency},{self.c_latency})"
 
 
 class Request:
@@ -44,7 +45,7 @@ class Request:
         self.nb_request = nb_request
 
     def __repr__(self):
-        return f"Request({video},{endpoint},{nb_request})"
+        return f"Request({self.video},{self.endpoint},{self.nb_request})"
 
 
 class Cache:
