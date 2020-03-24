@@ -104,9 +104,7 @@ class Problem:
                     self._endpoints_of_cache[id_cache].append(endpoint.num_id)
                 else:
                     self._endpoints_of_cache[id_cache] = [endpoint.num_id]
-                  
-                    
-                    
+                                      
     """ Return the endPoints connected to the cache identified by id_cache"""
     def get_requests_of_endpoint(self, id_endpoint):
         if len(self._requests_of_endpoint) == 0:
@@ -124,15 +122,7 @@ class Problem:
             request_dict[iE] = []
         for request in self._requests :
             request_dict[request.endpoint.num_id] = request
-
-
-
-
-
-
-
-
-
+            
 
     @property
     def caches_id(self):
