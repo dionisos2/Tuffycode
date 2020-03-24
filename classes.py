@@ -121,7 +121,7 @@ class Problem:
         for iE in range (self._infos["E"]):
             request_dict[iE] = []
         for request in self._requests :
-            request_dict[request.endpoint.num_id] = request
+            request_dict[request.endpoint.num_id].append(request)
             
 
     @property
