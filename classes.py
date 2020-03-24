@@ -33,7 +33,7 @@ class EndPoint:
         return self.caches_latency[cache_id]
 
     def __repr__(self):
-        return f"EndPoint({num_id},{dc_latency},{c_latency})")
+        return f"EndPoint({num_id},{dc_latency},{c_latency})"
 
 
 class Request:
@@ -44,7 +44,7 @@ class Request:
         self.nb_request = nb_request
 
     def __repr__(self):
-        return f"Request({video},{endpoint},{nb_request})")
+        return f"Request({video},{endpoint},{nb_request})"
 
 
 class Cache:
@@ -83,7 +83,7 @@ class Problem:
         self._endpoints = list()
         self._requests = set()
         self._endpoints_of_cache = dict()
-        self._requests_of_endpoint = dict())
+        self._requests_of_endpoint = dict()
 
     """ Return the endPoints connected to the cache identified by id_cache"""
     def get_endpoints_of_cache(self, id_cache):
