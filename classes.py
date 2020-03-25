@@ -70,7 +70,7 @@ class Cache:
 class Solution:
     """Dict of caches (and their configuration)."""
     def __init__(self):
-        self.caches = dict() # or set(). Dict() permet surtout d'avoir indexation.
+        self.caches = dict()
 
     # Set solutions
     def set_cache(self, cache):
@@ -111,12 +111,12 @@ class Problem:
         #   | ep -> cache is straightforward
         #   | cache -> ep is not
         self._endpoints_of_caches_link = dict()
-        # Between: request <-> endpoints
-        #   | req -> ep is straightforward
-        #   | ep -> req is not
-        self._requests_of_endpoints_link = dict()
-        # Between: request <-> videos/caches ?
-        self._requests_of_videos_link = dict() # in particular for video scoring ?
+#        # Between: request <-> endpoints
+#        #   | req -> ep is straightforward
+#        #   | ep -> req is not
+#        self._requests_of_endpoints_link = dict()
+        # Between: request <-> videos/caches
+        self._requests_of_videos_link = dict()
 
     # Links: endpoints <- cache
     def get_endpoints_of_cache(self, cache_id):
@@ -139,25 +139,25 @@ class Problem:
                 else:
                     self._endpoints_of_caches_link[cache_id] = [endpoint.num_id]
                                       
-    # Links: requests <- endpoint
-    def get_requests_of_endpoint(self, endpoint_id):
-        """ Return requests called from endpoint identified by endpoint_id."""
-        if len(self._requests_of_endpoints_link) == 0:
-            self._create_requests_of_endpoints_link()
-
-        return self._requests_of_endpoints_link[endpoint_id]
-    
-    def _create_requests_of_endpoints_link(self):
-        """Create a dictionary associating each endpoint to their connected requests."""
-        if len(self._requests_of_endpoints_link) > 0:
-            raise RuntimeError("create_requests_of_endpoints_link should be call only one time")
-        
-        # Peut-etre reprendre le code de _create_endpoints_of_caches_link ?
-        request_dict  = dict()
-        for iE in range (self._infos["E"]):
-            request_dict[iE] = []
-        for request in self._requests :
-            request_dict[request.endpoint.num_id].append(request)
+#    # Links: requests <- endpoint
+#    def get_requests_of_endpoint(self, endpoint_id):
+#        """ Return requests called from endpoint identified by endpoint_id."""
+#        if len(self._requests_of_endpoints_link) == 0:
+#            self._create_requests_of_endpoints_link()
+#
+#        return self._requests_of_endpoints_link[endpoint_id]
+#    
+#    def _create_requests_of_endpoints_link(self):
+#        """Create a dictionary associating each endpoint to their connected requests."""
+#        if len(self._requests_of_endpoints_link) > 0:
+#            raise RuntimeError("create_requests_of_endpoints_link should be call only one time")
+#        
+#        # Peut-etre reprendre le code de _create_endpoints_of_caches_link ?
+#        request_dict  = dict()
+#        for iE in range (self._infos["E"]):
+#            request_dict[iE] = []
+#        for request in self._requests :
+#            request_dict[request.endpoint.num_id].append(request)
             
     # Links: requests <- video
     def get_requests_of_video(self, video_id):
