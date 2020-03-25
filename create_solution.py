@@ -21,7 +21,7 @@ def create_random_solution(problem):
 
 # %% Optimized solution
 
-class Addition:
+class Copystore:
     def __init__(self, video_id, cache_id):
         self.couple_id = (video_id, cache_id)
         self.video_id = video_id
@@ -29,7 +29,7 @@ class Addition:
         self.score = None
 
     def __repr__(self):
-        return f"Addition({self.video_id}, {self.cache_id}, {self.score})"
+        return f"Copystore({self.video_id}, {self.cache_id}, {self.score})"
 
 
 def create_solution(problem):
@@ -38,44 +38,44 @@ def create_solution(problem):
     for cache_id in range(problem.nb_caches):
         solution.add_cache(Cache(cache_id))
 
-    possible_additions = create_possible_additions(problem, solution)
-    links_to_additions = create_links_to_additions(problem)
+    possible_copystores = create_possible_copystores(problem, solution)
+    links_to_copystores = create_links_to_copystores(problem)
 
-    while len(possible_additions) > 0:
-        best_addition = get_best_additions(problem, possible_additions)
-        add_video(problem, solution, best_addition)
-        additions_to_remove = get_additions_to_remove(problem, solution, possible_additions, best_addition)
-        recalculate_score(problem, solution, possible_additions, links_to_additions, best_addition)
+    while len(possible_copystores) > 0:
+        best_copystore = get_best_copystores(problem, possible_copystores)
+        add_video(problem, solution, best_copystore)
+        copystores_to_remove = get_copystores_to_remove(problem, solution, possible_copystores, best_copystore)
+        recalculate_score(problem, solution, possible_copystores, links_to_copystores, best_copystore)
 
-        for addition_id in additions_to_remove:
-            del possible_additions[addition_id]
+        for copystore_id in copystores_to_remove:
+            del possible_copystores[copystore_id]
 
-        if best_addition.couple_id in possible_additions:
-            del possible_additions[best_addition.couple_id]
+        if best_copystore.couple_id in possible_copystores:
+            del possible_copystores[best_copystore.couple_id]
 
     return solution
 
-# %% Prepare struture for additions manipulation
+# %% Prepare struture for copystores manipulation
 
-"""Create a dict of all possibles additions"""
-# Initiate and compute additions' score.
-def create_possible_additions(problem, solution):
-    possible_additions = dict()
+"""Create a dict of all possibles copystores"""
+# Initiate and compute copystores' score.
+def create_possible_copystores(problem, solution):
+    possible_copystores = dict()
 
     for video in problem.videos:
         video_id = video.num_id
         for cache_id in problem.caches_id:
-            addition = Addition(video_id, cache_id)
-            addition.score = get_video_score(problem, solution, video_id, cache_id)
-            possible_additions[addition.couple_id] = addition
-    return possible_additions
+            copystore = Copystore(video_id, cache_id)
+            copystore.score = get_video_score(problem, solution, video_id, cache_id)
+            possible_copystores[copystore.couple_id] = copystore
+    return possible_copystores
 
 
-"""Create a dict of dict, allowing to get all additions we should modify for a particular video and a particular cache.
-Double dict indexed by a video and a cache (i.e. an addition).
+"""Create a dict of dict, allowing to get all copystores we should modify for a particular video and a particular cache.
+Double dict indexed by a video and a cache (i.e. an copystore).
 Each value is a set of caches that are linked to this cache.
 """
-def create_links_to_additions(problem):
+def create_links_to_copystores(problem):
     # Dans cette construction, les caches lies ne sont pas video-dependant.
 
     linked_caches = dict()
@@ -94,11 +94,11 @@ def create_links_to_additions(problem):
     for video in problem.videos:
         result[video.num_id] = dict()
         for current_cache_id in problem.caches_id:
-            current_addition_id = (video.num_id, current_cache_id)
+            current_copystore_id = (video.num_id, current_cache_id)
 
             connected_caches_id = linked_caches[current_cache_id]
-            connected_additions_id = [(video.num_id, cache_id) for cache_id in connected_caches_id]
-            result[current_addition_id] = connected_additions_id
+            connected_copystores_id = [(video.num_id, cache_id) for cache_id in connected_caches_id]
+            result[current_copystore_id] = connected_copystores_id
 
     return result
 
@@ -128,45 +128,45 @@ def get_video_score(problem, solution, video_id, cache_id):
 
 # %% Optimization iteration functions
 
-"""Return the current best possible additions (max of score/size)"""
-def get_best_additions(problem, possible_additions):
+"""Return the current best possible copystores (max of score/size)"""
+def get_best_copystores(problem, possible_copystores):
 
-    def value_of_addition(addition):
-        size = problem.videos[addition.video_id].size
-        return addition.score/size
+    def value_of_copystore(copystore):
+        size = problem.videos[copystore.video_id].size
+        return copystore.score/size
 
-    best_addition = max(possible_additions.values(), key=value_of_addition)
+    best_copystore = max(possible_copystores.values(), key=value_of_copystore)
 
-    return best_addition
+    return best_copystore
 
 
 """Add a video to the correct cache of the solution"""
-def add_video(problem, solution, best_addition):
-    video_id = best_addition.video_id
+def add_video(problem, solution, best_copystore):
+    video_id = best_copystore.video_id
     video = problem.videos[video_id]
-    cache_id = best_addition.cache_id
+    cache_id = best_copystore.cache_id
 
     solution.caches[cache_id].add_video(video)
 
-""" recalculate the score of all possible additions that require modification"""
-def recalculate_score(problem, solution, possible_additions, links_to_additions, best_addition):
-    additions_to_change = links_to_additions[best_addition.couple_id]
+""" recalculate the score of all possible copystores that require modification"""
+def recalculate_score(problem, solution, possible_copystores, links_to_copystores, best_copystore):
+    copystores_to_change = links_to_copystores[best_copystore.couple_id]
 
-    for addition_id in additions_to_change:
-        (video_id, cache_id) = addition_id
-        if addition_id in possible_additions:
-            possible_additions[addition_id].score = get_video_score(problem, solution, video_id, cache_id)
+    for copystore_id in copystores_to_change:
+        (video_id, cache_id) = copystore_id
+        if copystore_id in possible_copystores:
+            possible_copystores[copystore_id].score = get_video_score(problem, solution, video_id, cache_id)
 
-""" Get a list of the id of all the additions to remove (for which the video would surcharge the size of the cache) """
-def get_additions_to_remove(problem, solution, possible_additions, best_addition):
-    addition_to_remove = []
+""" Get a list of the id of all the copystores to remove (for which the video would surcharge the size of the cache) """
+def get_copystores_to_remove(problem, solution, possible_copystores, best_copystore):
+    copystore_to_remove = []
     max_size = problem.caches_size
 
-    for addition_id in possible_additions.keys():
-        video_id, cache_id = addition_id
+    for copystore_id in possible_copystores.keys():
+        video_id, cache_id = copystore_id
         video_size = problem.videos[video_id].size
         current_size = sum(video.size for video in solution.caches[cache_id].videos)
         if current_size + video_size > max_size:
-            addition_to_remove.append(addition_id)
+            copystore_to_remove.append(copystore_id)
 
-    return addition_to_remove
+    return copystore_to_remove

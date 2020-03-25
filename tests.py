@@ -3,7 +3,7 @@ from get_score import get_score
 from load_and_save import load_problem, save_solution
 from create_solution import *
 
-def test_create_links_to_additions():
+def test_create_links_to_copystores():
     problem_path = "./input/example.txt"
     # problem_path = "./input/me_at_the_zoo.in"
 
@@ -12,16 +12,16 @@ def test_create_links_to_additions():
 
     print(problem)
 
-    links = create_links_to_additions(problem)
+    links = create_links_to_copystores(problem)
     print(links)
 
-    possible_additions = create_possible_additions(problem, solution)
-    print(possible_additions)
+    possible_copystores = create_possible_copystores(problem, solution)
+    print(possible_copystores)
 
-    possible_additions[(2,1)].score = 3
+    possible_copystores[(2,1)].score = 3
 
-    plop = get_best_additions(problem, possible_additions)
+    plop = get_best_copystores(problem, possible_copystores)
     print(plop)
 
 
-test_create_links_to_additions()
+test_create_links_to_copystores()
