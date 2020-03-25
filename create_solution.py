@@ -112,16 +112,22 @@ def create_links_to_copystores(problem):
 
 def get_video_score(problem, solution, video_id, cache_id):
     """Get the score of a video for a particular cache."""
-#    video = problem.videos[video_id]
+    video = problem.videos[video_id]
     score = 0
-
+    
+#    for request in problem.get_requests_of_video(video_id):
+#        if cache_id in request.endpoint.caches_latency:
+#            cache_latency = request.endpoint.caches_latency[cache_id]
+#            latency_gain = max(0,request.best_latency-cache_latency)
+#            score += latency_gain * request.nb_request
+            
     for endpoint_id in problem.get_endpoints_of_cache(cache_id):
         endpoint = problem.endpoints[endpoint_id]
         possible_latencies = [endpoint.dc_latency]
 
         for cache in solution.caches.values():
-            if video in cache.videos:
-                possible_latencies.append(endpoint.caches_latency[cache_id])
+            if cache.num_id in endpoint.caches_latency and video in cache.videos:
+                possible_latencies.append(endpoint.caches_latency[cache.num_id])
 
         best_latency = min(possible_latencies)
         latency_gain = max(0, best_latency - endpoint.caches_latency[cache_id])
