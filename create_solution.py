@@ -48,11 +48,13 @@ def create_solution(problem):
     links_to_copystores = create_links_to_copystores(problem)
 
     while len(possible_copystores) > 0:
+        # Choose
         best_copystore = get_best_copystores(problem, possible_copystores)
+        # Set
         solution.set_copystore(problem, best_copystore)
-        copystores_to_remove = get_copystores_to_remove(problem, solution, possible_copystores, best_copystore)
+        # Update
         recalculate_score(problem, solution, possible_copystores, links_to_copystores, best_copystore)
-
+        copystores_to_remove = get_copystores_to_remove(problem, solution, possible_copystores, best_copystore)
         for copystore_id in copystores_to_remove:
             del possible_copystores[copystore_id]
 
@@ -77,8 +79,8 @@ def create_possible_copystores(problem, solution):
     return possible_copystores
 
 
-"""Create a dict of dict, allowing to get all copystores we should modify for a particular video and a particular cache.
-Double dict indexed by a video and a cache (i.e. an copystore).
+"""Create a dict , allowing to get all copystores we should modify for a particular video and a particular cache.
+Dict indexed by a video and a cache (i.e. an copystore).
 Each value is a set of caches that are linked to this cache.
 """
 def create_links_to_copystores(problem):
@@ -98,7 +100,6 @@ def create_links_to_copystores(problem):
 
     result = dict()
     for video in problem.videos:
-        result[video.num_id] = dict()
         for current_cache_id in problem.caches_id:
             current_copystore_id = (video.num_id, current_cache_id)
 
@@ -148,12 +149,15 @@ def recalculate_score(problem, solution, possible_copystores, links_to_copystore
 def get_copystores_to_remove(problem, solution, possible_copystores, best_copystore):
     copystore_to_remove = []
     max_size = problem.caches_size
+    
+    last_modified_cache = solution.caches[best_copystore.cache_id]
+    current_size = last_modified_cache.get_size()
 
     for copystore_id in possible_copystores.keys():
         video_id, cache_id = copystore_id
-        video_size = problem.videos[video_id].size
-        current_size = sum(video.size for video in solution.caches[cache_id].videos)
-        if current_size + video_size > max_size:
-            copystore_to_remove.append(copystore_id)
+        if cache_id == last_modified_cache.num_id:
+            video_size = problem.get_video(video_id).size
+            if current_size + video_size > max_size:
+                copystore_to_remove.append(copystore_id)
 
     return copystore_to_remove

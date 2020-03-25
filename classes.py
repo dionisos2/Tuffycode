@@ -59,6 +59,9 @@ class Cache:
         self.videos.add(video)
 #        # si videos est dict()
 #        self.videos[video.num_id] = video
+    
+    def get_size(self):
+        return sum(video.size for video in self.videos)
 
     def __repr__(self):
         return f"Cache({self.num_id}, {self.videos})"
