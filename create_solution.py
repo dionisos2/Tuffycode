@@ -25,22 +25,25 @@ def create_random_solution(problem):
 # %% Optimized solution
 
 class Copystore:
-    def __init__(self, video_id, cache_id):
-        self.couple_id = (video_id, cache_id)
-        self.video_id = video_id
-        self.cache_id = cache_id
+    def __init__(self, video, cache):
+        self.num_id = (video.num_id, cache.num_id)
+        self.video = video
+        self.cache = cache
         self.score = None
 
     def __repr__(self):
-        return f"Copystore({self.video_id}, {self.cache_id}, {self.score})"
+        return f"Copystore({self.video}, {self.cache})"
+
+    def __str__(self):
+        return f"Copystore({self.video}, {self.cache}, {self.score})"
 
 
 def create_solution(problem):
     if problem.solution == None:
         solution = Solution()
-    
         for cache_id in range(problem.nb_caches):
             solution.set_cache(Cache(cache_id))
+        problem.set_solution(solution)
     else:
         solution = problem.solution
 
@@ -58,8 +61,8 @@ def create_solution(problem):
         for copystore_id in copystores_to_remove:
             del possible_copystores[copystore_id]
 
-        if best_copystore.couple_id in possible_copystores:
-            del possible_copystores[best_copystore.couple_id]
+        if best_copystore.num_id in possible_copystores:
+            del possible_copystores[best_copystore.num_id]
 
     return solution
 
@@ -71,11 +74,10 @@ def create_possible_copystores(problem, solution):
     possible_copystores = dict()
 
     for video in problem.videos:
-        video_id = video.num_id
-        for cache_id in problem.caches_id:
-            copystore = Copystore(video_id, cache_id)
-            copystore.score = get_video_score(problem, solution, video_id, cache_id)
-            possible_copystores[copystore.couple_id] = copystore
+        for cache in problem.solution.caches.values():
+            copystore = Copystore(video, cache)
+            copystore.score = get_video_score(problem, solution, video.num_id, cache.num_id)
+            possible_copystores[copystore.num_id] = copystore
     return possible_copystores
 
 
@@ -129,7 +131,7 @@ def get_video_score(problem, solution, video_id, cache_id):
 def get_best_copystores(problem, possible_copystores):
 
     def value_of_copystore(copystore):
-        size = problem.videos[copystore.video_id].size
+        size = copystore.video.size
         return copystore.score/size
 
     best_copystore = max(possible_copystores.values(), key=value_of_copystore)
@@ -138,7 +140,7 @@ def get_best_copystores(problem, possible_copystores):
 
 """ recalculate the score of all possible copystores that require modification"""
 def recalculate_score(problem, solution, possible_copystores, links_to_copystores, best_copystore):
-    copystores_to_change = links_to_copystores[best_copystore.couple_id]
+    copystores_to_change = links_to_copystores[best_copystore.num_id]
 
     for copystore_id in copystores_to_change:
         (video_id, cache_id) = copystore_id
@@ -150,7 +152,7 @@ def get_copystores_to_remove(problem, solution, possible_copystores, best_copyst
     copystore_to_remove = []
     max_size = problem.caches_size
     
-    last_modified_cache = solution.caches[best_copystore.cache_id]
+    last_modified_cache = best_copystore.cache
     current_size = last_modified_cache.get_size()
 
     for copystore_id in possible_copystores.keys():

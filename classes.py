@@ -79,13 +79,12 @@ class Solution:
     
     def set_copystore(self, problem, copystore): 
         """Add a video to the correct cache of the solution."""
-        video = problem.videos[copystore.video_id]
-        cache_id = copystore.cache_id
+        cache_id = copystore.cache.num_id
     
-        self.caches[cache_id].add_video(video)
+        self.caches[cache_id].add_video(copystore.video)
         
         # Update request best latency
-        for request in problem.get_requests_of_video(copystore.video_id):
+        for request in problem.get_requests_of_video(copystore.video.num_id):
             if cache_id in request.endpoint.caches_latency:
                 cache_latency = request.endpoint.caches_latency[cache_id]
                 request.best_latency = min(request.best_latency,cache_latency)
