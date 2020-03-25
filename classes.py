@@ -43,6 +43,8 @@ class Request:
         self.video = video
         self.endpoint = endpoint
         self.nb_request = nb_request
+        # 
+        self.best_latency = endpoint.dc_latency
 
     def __repr__(self):
         return f"Request({self.video},{self.endpoint},{self.nb_request})"
@@ -74,12 +76,11 @@ class Solution:
     
     def set_copystore(self, problem, copystore): 
         """Add a video to the correct cache of the solution."""
-        video_id = copystore.video_id
-        video = problem.videos[video_id]
+        video = problem.videos[copystore.video_id]
         cache_id = copystore.cache_id
     
         self.caches[cache_id].add_video(video)
-
+        
     
     def __str__(self):
         string = "---Solution---\n"
@@ -149,6 +150,26 @@ class Problem:
         for request in self._requests :
             request_dict[request.endpoint.num_id].append(request)
             
+    # Links: requests <- video
+    def get_requests_of_video(self, video_id):
+        """ Return requests calling video identified by video_id."""
+        if len(self._requests_of_videos_link) == 0:
+            self._create_requests_of_videos_link()
+        
+        return self._requests_of_videos_link[video_id]
+    
+    def _create_requests_of_videos_link(self):
+        """Create a dictionary associating each video to their connected requests."""
+        if len(self._requests_of_videos_link) > 0:
+            raise RuntimeError("create_requests_of_videos_link should be call only one time.")
+        
+        for request in self._requests:
+            video_id = request.video.num_id
+            if video_id in self._requests_of_videos_link:
+                self._requests_of_videos_link[video_id].add(request)
+            else:
+                self._requests_of_videos_link[video_id] = {request}
+
 
     @property
     def caches_id(self):

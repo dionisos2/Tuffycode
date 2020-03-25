@@ -112,7 +112,7 @@ def create_links_to_copystores(problem):
 
 def get_video_score(problem, solution, video_id, cache_id):
     """Get the score of a video for a particular cache."""
-    video = problem.videos[video_id]
+#    video = problem.videos[video_id]
     score = 0
 
     for endpoint_id in problem.get_endpoints_of_cache(cache_id):
@@ -146,7 +146,6 @@ def get_best_copystores(problem, possible_copystores):
     best_copystore = max(possible_copystores.values(), key=value_of_copystore)
 
     return best_copystore
-
 
 """ recalculate the score of all possible copystores that require modification"""
 def recalculate_score(problem, solution, possible_copystores, links_to_copystores, best_copystore):
