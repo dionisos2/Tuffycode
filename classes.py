@@ -43,7 +43,7 @@ class Request:
         self.video = video
         self.endpoint = endpoint
         self.nb_request = nb_request
-        # 
+        #
         self.best_latency = endpoint.dc_latency
 
     def __repr__(self):
@@ -59,7 +59,7 @@ class Cache:
         self.videos.add(video)
 #        # si videos est dict()
 #        self.videos[video.num_id] = video
-    
+
     def get_size(self):
         return sum(video.size for video in self.videos)
 
@@ -76,20 +76,20 @@ class Solution:
     def set_cache(self, cache):
         """Directly set cache configuration."""
         self.caches[cache.num_id] = cache
-    
-    def set_copystore(self, problem, copystore): 
+
+    def set_copystore(self, problem, copystore):
         """Add a video to the correct cache of the solution."""
         cache_id = copystore.cache.num_id
-    
+
         self.caches[cache_id].add_video(copystore.video)
-        
+
         # Update request best latency
         for request in problem.get_requests_of_video(copystore.video.num_id):
             if cache_id in request.endpoint.caches_latency:
                 cache_latency = request.endpoint.caches_latency[cache_id]
                 request.best_latency = min(request.best_latency,cache_latency)
 
-    
+
     def __str__(self):
         string = "---Solution---\n"
         string += f"Caches: {self.caches}"
@@ -104,7 +104,7 @@ class Problem:
         self._endpoints = list()
         self._requests = set()
         # Attached solution
-        self._solution = None        
+        self._solution = None
         # >> Constructed look-up table <<
         # Between: endpoints <-> cache
         #   | ep -> cache is straightforward
@@ -137,7 +137,7 @@ class Problem:
                     self._endpoints_of_caches_link[cache_id].append(endpoint.num_id)
                 else:
                     self._endpoints_of_caches_link[cache_id] = [endpoint.num_id]
-                                      
+
 #    # Links: requests <- endpoint
 #    def get_requests_of_endpoint(self, endpoint_id):
 #        """ Return requests called from endpoint identified by endpoint_id."""
@@ -145,40 +145,40 @@ class Problem:
 #            self._create_requests_of_endpoints_link()
 #
 #        return self._requests_of_endpoints_link[endpoint_id]
-#    
+#
 #    def _create_requests_of_endpoints_link(self):
 #        """Create a dictionary associating each endpoint to their connected requests."""
 #        if len(self._requests_of_endpoints_link) > 0:
 #            raise RuntimeError("create_requests_of_endpoints_link should be call only one time")
-#        
+#
 #        # Peut-etre reprendre le code de _create_endpoints_of_caches_link ?
 #        request_dict  = dict()
 #        for iE in range (self._infos["E"]):
 #            request_dict[iE] = []
 #        for request in self._requests :
 #            request_dict[request.endpoint.num_id].append(request)
-            
+
     # Links: requests <- video
     def get_requests_of_video(self, video_id):
         """ Return requests calling video identified by video_id."""
         if len(self._requests_of_videos_link) == 0:
             self._create_requests_of_videos_link()
-        
+
         return self._requests_of_videos_link[video_id]
-    
+
     def _create_requests_of_videos_link(self):
         """Create a dictionary associating each video to their connected requests."""
         if len(self._requests_of_videos_link) > 0:
             raise RuntimeError("create_requests_of_videos_link should be call only one time.")
-        
+
         # Initiate all videos with empty set (some video may not be requested)
         for video in self._videos:
             self._requests_of_videos_link[video.num_id] = set()
-        
+
         for request in self._requests:
             video_id = request.video.num_id
             self._requests_of_videos_link[video_id].add(request)
-                
+
 
     @property
     def caches_id(self):
@@ -257,7 +257,7 @@ class Problem:
         return self._solution
     def set_solution(self, solution):
         self._solution = solution
-    
+
 
     def __str__(self):
         result_path = "Result path: " + str(self.result_path) + "\n"

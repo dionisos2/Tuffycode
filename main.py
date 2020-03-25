@@ -16,7 +16,7 @@ def main(problem_name, random_solution = False):
     save_solution(solution, solution_path)
 
     score = get_score(problem_path, solution_path)
-    print(score)
+    return score
 
 def test_example():
     problem_path = "./input/example.txt"
@@ -25,8 +25,6 @@ def test_example():
     print(score)
     print(score == 462500)
 
-test_example()
-
 def random_and_main(name):
     print("random solution")
     main(name, True)
@@ -34,5 +32,13 @@ def random_and_main(name):
     main(name)
 
 
-name = "me_at_the_zoo.in" #kittens.in.txt"
-random_and_main(name)
+def final_score():
+    score = 0
+    score += main("me_at_the_zoo.in")
+    score += main("trending_today.in")
+    score += main("videos_worth_spreading.in")
+    score += main("kittens.in.txt")
+    return score
+
+name = "me_at_the_zoo.in"
+print(main(name))

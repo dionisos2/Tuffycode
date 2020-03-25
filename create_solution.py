@@ -15,7 +15,7 @@ def create_random_solution(problem):
             video = random.choice(problem.videos)
             current_size += video.size
         solution.set_cache(cache)
-        
+
     # Overwrite potentiel existing solution
     problem.set_solution(solution)
 
@@ -122,7 +122,7 @@ def get_video_score(problem, solution, video_id, cache_id):
             cache_latency = request.endpoint.get_cache_latency(cache_id)
             latency_gain = max(0,request.best_latency-cache_latency)
             score += latency_gain * request.nb_request
-    
+
     return score
 
 # %% Optimization iteration functions
@@ -151,7 +151,7 @@ def recalculate_score(problem, solution, possible_copystores, links_to_copystore
 def get_copystores_to_remove(problem, solution, possible_copystores, best_copystore):
     copystore_to_remove = []
     max_size = problem.caches_size
-    
+
     last_modified_cache = best_copystore.cache
     current_size = last_modified_cache.get_size()
 
