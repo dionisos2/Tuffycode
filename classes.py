@@ -34,7 +34,7 @@ class EndPoint:
         return self.caches_latency[cache_id]
 
     def __repr__(self):
-        return f"EndPoint({self.num_id},{self.dc_latency},{self.c_latency})"
+        return f"EndPoint({self.num_id},{self.dc_latency},{self.caches_latency})"
 
 
 class Request:
@@ -81,6 +81,12 @@ class Solution:
     
         self.caches[cache_id].add_video(video)
         
+        # Update request best latency
+        for request in problem.get_requests_of_video(copystore.video_id):
+            if cache_id in request.endpoint.caches_latency:
+                cache_latency = request.endpoint.caches_latency[cache_id]
+                request.best_latency = min(request.best_latency,cache_latency)
+
     
     def __str__(self):
         string = "---Solution---\n"
@@ -163,13 +169,14 @@ class Problem:
         if len(self._requests_of_videos_link) > 0:
             raise RuntimeError("create_requests_of_videos_link should be call only one time.")
         
+        # Initiate all videos with empty set (some video may not be requested)
+        for video in self._videos:
+            self._requests_of_videos_link[video.num_id] = set()
+        
         for request in self._requests:
             video_id = request.video.num_id
-            if video_id in self._requests_of_videos_link:
-                self._requests_of_videos_link[video_id].add(request)
-            else:
-                self._requests_of_videos_link[video_id] = {request}
-
+            self._requests_of_videos_link[video_id].add(request)
+                
 
     @property
     def caches_id(self):
