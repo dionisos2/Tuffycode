@@ -1,6 +1,8 @@
 import random
 from classes import *
 
+import matplotlib.pyplot as plt
+
 # %% Random solution
 
 def create_random_solution(problem):
@@ -35,7 +37,11 @@ class Copystore:
         return f"Copystore({self.video}, {self.cache})"
 
     def __str__(self):
-        return f"Copystore({self.video}, {self.cache}, {self.score})"
+        string = "Copystore"
+        string += f"\nvideo:\t{self.video}"
+        string += f"\ncache:\t{self.cache}"
+        string += f"\nscore:\t{self.score}"
+        return string
 
 
 def create_solution(problem):
@@ -49,10 +55,21 @@ def create_solution(problem):
 
     possible_copystores = create_possible_copystores(problem, solution)
     links_to_copystores = create_links_to_copystores(problem)
-
+    
+    steps = 0
+    histo = ""
+    n_colors = 256
+    colors = plt.cm.viridis(range(0,n_colors*4,4))
     while len(possible_copystores) > 0:
         # Choose
         best_copystore = get_best_copystores(problem, possible_copystores)
+        # (debug)
+        steps += 1
+        histo += f"== Step {steps}\n{best_copystore}\n"
+        plt.bar(best_copystore.cache.num_id,best_copystore.video.size, 
+                bottom=best_copystore.cache.get_size(),
+                width=0.6,
+                color=colors[steps%n_colors])
         # Set
         solution.set_copystore(problem, best_copystore)
         # Update
@@ -63,8 +80,12 @@ def create_solution(problem):
 
         if best_copystore.num_id in possible_copystores:
             del possible_copystores[best_copystore.num_id]
+    
+    with open("./output/debug.txt", "w") as debug_file:
+        debug_file.write(histo)
 
     return solution
+
 
 # %% Prepare struture for copystores manipulation
 
