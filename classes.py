@@ -63,13 +63,24 @@ class Cache:
 
 
 class Solution:
-    """Sets of caches (and their configuration)."""
+    """Dict of caches (and their configuration)."""
     def __init__(self):
         self.caches = dict() # or set(). Dict() permet surtout d'avoir indexation.
 
-    def add_cache(self, cache):
+    # Set solutions
+    def set_cache(self, cache):
+        """Directly set cache configuration."""
         self.caches[cache.num_id] = cache
+    
+    def set_copystore(self, problem, copystore): 
+        """Add a video to the correct cache of the solution."""
+        video_id = copystore.video_id
+        video = problem.videos[video_id]
+        cache_id = copystore.cache_id
+    
+        self.caches[cache_id].add_video(video)
 
+    
     def __str__(self):
         string = "---Solution---\n"
         string += f"Caches: {self.caches}"
@@ -83,6 +94,8 @@ class Problem:
         self._videos = list()
         self._endpoints = list()
         self._requests = set()
+        # Attached solution
+        self._solution = None        
         # >> Constructed look-up table <<
         # Between: endpoints <-> cache
         #   | ep -> cache is straightforward
@@ -208,6 +221,13 @@ class Problem:
     def set_requests(self, requests):
         self._requests = requests
 
+    # Solution
+    @property
+    def solution(self):
+        return self._solution
+    def set_solution(self, solution):
+        self._solution = solution
+    
 
     def __str__(self):
         result_path = "Result path: " + str(self.result_path) + "\n"

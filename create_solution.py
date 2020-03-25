@@ -14,7 +14,10 @@ def create_random_solution(problem):
             cache.add_video(video)
             video = random.choice(problem.videos)
             current_size += video.size
-        solution.add_cache(cache)
+        solution.set_cache(cache)
+        
+    # Overwrite potentiel existing solution
+    problem.set_solution(solution)
 
     return solution
 
@@ -33,17 +36,20 @@ class Copystore:
 
 
 def create_solution(problem):
-    solution = Solution()
-
-    for cache_id in range(problem.nb_caches):
-        solution.add_cache(Cache(cache_id))
+    if problem.solution == None:
+        solution = Solution()
+    
+        for cache_id in range(problem.nb_caches):
+            solution.set_cache(Cache(cache_id))
+    else:
+        solution = problem.solution
 
     possible_copystores = create_possible_copystores(problem, solution)
     links_to_copystores = create_links_to_copystores(problem)
 
     while len(possible_copystores) > 0:
         best_copystore = get_best_copystores(problem, possible_copystores)
-        add_video(problem, solution, best_copystore)
+        solution.set_copystore(problem, best_copystore)
         copystores_to_remove = get_copystores_to_remove(problem, solution, possible_copystores, best_copystore)
         recalculate_score(problem, solution, possible_copystores, links_to_copystores, best_copystore)
 
@@ -120,8 +126,10 @@ def get_video_score(problem, solution, video_id, cache_id):
         best_latency = min(possible_latencies)
         latency_gain = max(0, best_latency - endpoint.caches_latency[cache_id])
 
-        for request in problem.get_requests_of_endpoint(endpoint_id):
-            if request.video.num_id == video_id:
+        for request in problem.requests:
+            if request.video.num_id == video_id and request.endpoint.num_id == endpoint_id:
+#        for request in problem.get_requests_of_endpoint(endpoint_id):
+#            if request.video.num_id == video_id:
                 score += latency_gain * request.nb_request
 
     return score
@@ -139,14 +147,6 @@ def get_best_copystores(problem, possible_copystores):
 
     return best_copystore
 
-
-"""Add a video to the correct cache of the solution"""
-def add_video(problem, solution, best_copystore):
-    video_id = best_copystore.video_id
-    video = problem.videos[video_id]
-    cache_id = best_copystore.cache_id
-
-    solution.caches[cache_id].add_video(video)
 
 """ recalculate the score of all possible copystores that require modification"""
 def recalculate_score(problem, solution, possible_copystores, links_to_copystores, best_copystore):

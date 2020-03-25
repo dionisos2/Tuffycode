@@ -99,9 +99,9 @@ def load_problem(problem_path):
         problem.set_requests(requests_set)
         
         # Init caches/solution? # to return or include into problem
-        caches_list = []
+        solution = Solution()
         for iC in range(problem.infos["C"]):
-            caches_list.append(Cache(iC))
+            solution.set_cache(Cache(iC))
 
     return problem
 
@@ -128,6 +128,9 @@ def load_solution(file_path, problem):
             for video_id in params[1:]:
                 cache.add_video(problem.get_video(video_id))
 
-            solution.add_cache(cache)
+            solution.set_cache(cache)
+
+    # Overwrite potentiel existing solution
+    problem.set_solution(solution)
 
     return solution

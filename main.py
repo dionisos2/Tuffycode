@@ -34,4 +34,5 @@ def random_and_main(name):
     main(name)
 
 
-random_and_main("kittens.in.txt")
+name = "me_at_the_zoo.in" #kittens.in.txt"
+random_and_main(name)
