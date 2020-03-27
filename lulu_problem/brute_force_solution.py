@@ -40,7 +40,7 @@ def get_solution(board, current_pos=None, step=1):
     return result
 
 
-board = Board(4,5)
+board = Board(4,6)
 print(get_solution(board))
 
 

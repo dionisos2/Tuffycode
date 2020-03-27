@@ -30,21 +30,29 @@ class Path:
 
         return result
 
+    def __repr__(self):
+        result = ""
+        for move in self.path:
+            result += str(move)+"→"
+        return result
+
 def get_solution(board):
-    current_path = []
+    current_paths = []
     for x in range(0, board.xmax//2):
         for y in range(0, board.ymax//2):
             path = Path(board)
             path.add_move((x, y))
-            current_path.append(path)
+            current_paths.append(path)
 
-    for step in range(board.xmax*board.ymax):
-        new_current_path = []
-        for path in current_path:
-            new_current_path += get_next_paths(path)
-        current_path = new_current_path
+    # print(current_paths)
+    for step in range(board.xmax*board.ymax-1):
+        new_current_paths = []
+        for path in current_paths:
+            new_current_paths += get_next_paths(path)
+        current_paths = new_current_paths
+        # print(current_paths)
 
-    return len(current_path)
+    return len(current_paths)*4
 
 
 
@@ -57,5 +65,5 @@ def get_next_paths(path):
         result.append(new_path)
     return result
 
-board = Board(4,5)
+board = Board(4,6)
 print(get_solution(board))
