@@ -20,7 +20,7 @@ def get_solution(board, current_pos=None, step=1):
     result = 0
 
     if step == (board.xmax*board.ymax)+1:
-        print(board)
+        # print(board)
         return 1
 
     if current_pos == None:
@@ -40,7 +40,7 @@ def get_solution(board, current_pos=None, step=1):
     return result
 
 
-board = Board(4,6)
+board = Board(4,5)
 print(get_solution(board))
 
 
