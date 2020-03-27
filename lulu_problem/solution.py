@@ -18,17 +18,21 @@ class Path:
     def current_pos(self):
         return self.path[-1]
 
-    def move_possible(self, move):
+    def move_possible(self, move, collision):
         x, y = move
-        return (0 <= x < self.xmax) and (0 <= y < self.ymax) and move not in self.path
+        return (0 <= x < self.xmax) and (0 <= y < self.ymax) and ((not collision) or (move not in self.path))
 
-    def get_next_moves(self):
+    def get_next_moves(self, move=None, collision=True):
         result = []
-        x, y = self.current_pos
+        if move == None:
+            x, y = self.current_pos
+        else:
+            x, y = move
+
         for dmove in Path.DMOVES:
             move = (dmove[0]+x, dmove[1]+y)
 
-            if self.move_possible(move):
+            if self.move_possible(move, collision):
                 result.append(move)
 
         return result
@@ -43,11 +47,24 @@ class Path:
         #liberties[move]=number of liberty
         liberties = dict()
 
-        for move in self.paths:
-            pass
+        for move in self.path[:-1]:
+            for next_move in self.get_next_moves(move):
+                if next_move in self.path:
+                    continue
+                if next_move in liberties:
+                    liberties[next_move] -= 1
+                    if liberties[next_move] == 0:
+                        return False
+                else:
+                    liberties[next_move] = len(self.get_next_moves(next_move, False))-1
+        return True
 
 def remove_bad_paths(paths):
-    return [path for path in paths if path.is_valid()]
+    print("-"*10)
+    print(len(paths))
+    new_paths = [path for path in paths if path.is_valid()]
+    print(len(new_paths))
+    return new_paths
 
 def merge_paths(paths):
     return paths
@@ -67,7 +84,7 @@ def get_solution(board):
             new_current_paths += get_next_paths(path)
 
         current_paths = remove_bad_paths(new_current_paths)
-        current_paths = merge_paths(new_current_paths)
+        current_paths = merge_paths(current_paths)
         # print(current_paths)
 
     return len(current_paths)*4
@@ -83,5 +100,5 @@ def get_next_paths(path):
         result.append(new_path)
     return result
 
-board = Board(4,6)
+board = Board(4, 6)
 print(get_solution(board))
