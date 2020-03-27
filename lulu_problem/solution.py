@@ -8,6 +8,9 @@ class Path:
         self.xmax = board.xmax
         self.ymax = board.ymax
         self.path = []
+        #number of paths this path represent
+        self.weight = 1
+
     def add_move(self, move):
         self.path.append(move)
 
@@ -36,6 +39,19 @@ class Path:
             result += str(move)+"→"
         return result
 
+    def is_valid(self):
+        #liberties[move]=number of liberty
+        liberties = dict()
+
+        for move in self.paths:
+            pass
+
+def remove_bad_paths(paths):
+    return [path for path in paths if path.is_valid()]
+
+def merge_paths(paths):
+    return paths
+
 def get_solution(board):
     current_paths = []
     for x in range(0, board.xmax//2):
@@ -49,7 +65,9 @@ def get_solution(board):
         new_current_paths = []
         for path in current_paths:
             new_current_paths += get_next_paths(path)
-        current_paths = new_current_paths
+
+        current_paths = remove_bad_paths(new_current_paths)
+        current_paths = merge_paths(new_current_paths)
         # print(current_paths)
 
     return len(current_paths)*4
