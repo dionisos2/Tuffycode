@@ -100,5 +100,5 @@ def get_next_paths(path):
         result.append(new_path)
     return result
 
-board = Board(4, 6)
+board = Board(6,  6)
 print(get_solution(board))
